@@ -296,10 +296,239 @@ table.mini-table{width:100%}
   opacity:0;pointer-events:none;transition:opacity .2s, transform .2s;z-index:50
 }
 .toast.on{opacity:1;transform:translate(-50%,0)}
+
+/* ---------- פוסטר התחרות ---------- */
+.poster{
+  display:grid;
+  grid-template-columns:270px minmax(0,1fr);
+  background:
+    linear-gradient(180deg, rgba(224,161,59,.10), transparent 55%),
+    var(--card);
+  border:1px solid var(--line);
+  border-radius:var(--radius);
+  overflow:hidden;
+  box-shadow:var(--shadow);
+  margin-bottom:18px;
+}
+.poster-art{position:relative;min-height:100%;background:var(--bg2);overflow:hidden}
+.poster-art img{width:100%;height:100%;object-fit:cover;display:block}
+.poster-body{padding:22px 22px 20px}
+.poster-kicker{
+  display:inline-block;
+  font-size:11.5px;
+  letter-spacing:.14em;
+  font-weight:800;
+  color:var(--brand);
+  background:rgba(192,86,47,.10);
+  border:1px solid rgba(192,86,47,.20);
+  border-radius:999px;
+  padding:4px 10px;
+}
+.poster-title{
+  font-size:clamp(26px,4.6vw,40px);
+  line-height:1.12;
+  margin:12px 0 6px;
+  font-weight:900;
+  letter-spacing:-.01em;
+}
+.poster-title::after{
+  content:"";
+  display:block;
+  width:74px;
+  height:5px;
+  border-radius:99px;
+  margin-top:10px;
+  background:linear-gradient(90deg, var(--brand), var(--brand2));
+}
+.poster-sub{margin:10px 0 16px;color:var(--muted);font-size:14.5px;line-height:1.6;max-width:52ch}
+.prizes{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px}
+.prize-card{
+  position:relative;
+  border-radius:14px;
+  padding:14px 14px 12px;
+  border:1px solid var(--line);
+  background:var(--bg2);
+  display:grid;
+  gap:2px;
+}
+.prize-card.gold{background:linear-gradient(160deg, rgba(224,161,59,.28), rgba(224,161,59,.06))}
+.prize-card.silver{background:linear-gradient(160deg, rgba(140,150,165,.24), rgba(140,150,165,.05))}
+.prize-num{font-size:38px;font-weight:900;line-height:1;color:var(--brand)}
+.prize-card.silver .prize-num{color:#6f7787}
+[data-theme="dark"] .prize-card.silver .prize-num{color:#c8cfdc}
+.prize-lbl{font-weight:800;font-size:15px}
+.prize-note{font-size:12px;color:var(--muted);line-height:1.4}
+.poster-rules{list-style:none;margin:0 0 12px;padding:0;display:grid;gap:7px;font-size:13.5px;line-height:1.55}
+.poster-rules li{position:relative;padding-right:24px;color:var(--text)}
+.poster-rules li::before{
+  content:"✓";
+  position:absolute;right:0;top:0;
+  width:17px;height:17px;border-radius:50%;
+  background:rgba(47,158,99,.16);color:var(--ok);
+  font-size:11px;font-weight:900;display:grid;place-items:center;
+  margin-top:2px;
+}
+.poster-foot{
+  margin:0;font-size:12.5px;color:var(--muted);line-height:1.55;
+  border-top:1px dashed var(--line);padding-top:10px;
+}
+
+/* ---------- נגן הסרטון ---------- */
+.player{
+  background:linear-gradient(180deg,#20242e,#171a22);
+  border-radius:var(--radius);
+  padding:14px 14px 12px;
+  color:#fff;
+  box-shadow:var(--shadow);
+}
+.player-head{display:flex;justify-content:space-between;align-items:center;font-size:13px;opacity:.9;padding:0 2px 10px}
+.player-count{font-variant-numeric:tabular-nums;background:rgba(255,255,255,.12);border-radius:999px;padding:2px 9px;font-size:12px}
+.stage{min-height:236px;display:grid;align-items:center}
+.slide{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:18px;align-items:center;padding:4px 2px 10px}
+.slide-text h3{margin:0 0 8px;font-size:18px;font-weight:800}
+.slide-text p{margin:0;font-size:13.5px;line-height:1.7;opacity:.86}
+.slide-visual{min-width:0}
+.player-progress{height:5px;border-radius:99px;background:rgba(255,255,255,.16);overflow:hidden;margin-top:6px}
+.player-progress i{display:block;height:100%;width:14%;border-radius:99px;background:linear-gradient(90deg,var(--brand2),var(--brand));transition:width .35s ease}
+.player-ctrl{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:12px}
+.player-note{font-size:11.5px;opacity:.6;margin-inline-start:auto}
+.btn.sm{padding:7px 13px;font-size:13px}
+.player .btn{
+  background:linear-gradient(180deg,#f3f5f9,#e6e9f0);
+  color:#1d2130;border-color:rgba(255,255,255,.3);
+}
+.player .btn.ghost{background:rgba(255,255,255,.10);color:#fff;border-color:rgba(255,255,255,.22)}
+
+/* ---------- מסכי דמו בתוך הסרטון ---------- */
+.mock{
+  background:#fff;color:#23262f;border-radius:14px;padding:12px;
+  font-size:12.5px;box-shadow:0 10px 26px rgba(0,0,0,.30);
+}
+.mock-chips{display:flex;flex-wrap:wrap;gap:6px;justify-content:center}
+.mock-chips span{background:#f2eee6;border-radius:9px;padding:5px 9px;font-weight:800;font-size:12px}
+.mock-chips span.on{background:#c0562f;color:#fff;box-shadow:0 4px 10px rgba(192,86,47,.35)}
+.mock-form .mrow{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:6px}
+.mock-form label{color:#8a8377;font-size:11.5px}
+.mock-form i{font-style:normal;background:#f7f4ec;border-radius:8px;padding:4px 9px;min-width:80px;text-align:center;font-weight:700;font-size:12px}
+.mock-form .mbtn{display:block;text-align:center;background:#c0562f;color:#fff;border-radius:9px;padding:7px;font-style:normal;font-weight:800;margin-top:9px;font-size:12.5px}
+.mock-books{display:flex;gap:8px}
+.mbook{flex:1;background:#f7f4ec;border-radius:12px;padding:9px 5px;text-align:center;display:grid;gap:2px}
+.mbook .me{font-size:20px;line-height:1}
+.mbook b{font-size:11.5px}
+.mbook small{color:#8a8377;font-size:11px}
+.mbook.spent{opacity:.5;filter:grayscale(.5)}
+.mock-q p{margin:7px 0;font-weight:800;line-height:1.45;font-size:12.5px}
+.mq-top{display:flex;justify-content:space-between;color:#8a8377;font-size:11px}
+.mopts{display:grid;gap:5px}
+.mopts i{font-style:normal;background:#f7f4ec;border-radius:8px;padding:5px 9px;font-size:12px}
+.mopts i.ok{background:#e6f5e8;border:1px solid #7fbf85;font-weight:800}
+.mfb{margin-top:8px;font-size:11.5px;color:#2f7d36;background:#eef8ef;border-radius:8px;padding:6px 8px;line-height:1.45}
+.mock-att{display:flex;align-items:center;gap:14px;justify-content:center}
+.mring{
+  width:94px;height:94px;border-radius:50%;background:#fff;
+  border:9px solid #e0a13b;display:grid;place-items:center;text-align:center;
+}
+.mring b{font-size:24px;line-height:1}
+.mring small{display:block;font-size:10px;color:#8a8377}
+.matt{display:grid;gap:6px}
+.matt span{background:#f7f4ec;border-radius:9px;padding:6px 10px;font-weight:700;font-size:12px}
+.matt .mused{background:#fdeceb;color:#b23a2c}
+.mock-table .mtr{display:grid;grid-template-columns:1fr 58px 58px;gap:6px;padding:6px 2px;border-bottom:1px solid #eee;font-size:12px;text-align:center}
+.mock-table .mtr span:first-child{text-align:right;font-weight:800}
+.mock-table .mhead{color:#8a8377;font-weight:800;font-size:11px}
+.mock-table .mtr:last-child{border-bottom:0}
+.mock-podium{display:flex;gap:8px;align-items:flex-end;justify-content:center}
+.mpod{flex:1;background:#f7f4ec;border-radius:12px;padding:9px 4px;text-align:center;display:grid;gap:2px}
+.mpod b{font-size:12px}
+.mpod small{color:#8a8377;font-size:10.5px}
+.mpod span{font-size:22px;line-height:1}
+.mpod.p1{background:#fff4d9;transform:translateY(-12px)}
+.mpod.p3{transform:translateY(-5px)}
+
+.intro-actions{display:flex;justify-content:center;margin-top:18px}
+.intro-actions .btn{font-size:16.5px;padding:13px 28px}
+
+@media (max-width:760px){
+  .poster{grid-template-columns:1fr}
+  .poster-art{height:180px}
+  .poster-body{padding:18px}
+  .slide{grid-template-columns:1fr}
+  .stage{min-height:auto}
+  .prizes{grid-template-columns:1fr 1fr}
+  .prize-num{font-size:32px}
+}
 </style>
 </head>
 <body>
 <div class="wrap">
+  <!-- ============ INTRO: poster + explainer ============ -->
+  <section id="screen-intro" class="screen">
+    <div class="top">
+      <div class="logo">
+        <div class="mark">📚</div>
+        <div>
+          <h1>תחרות סיפרידלין</h1>
+          <p>ספריית המשחקונים של בית הספר · 25 ספרים</p>
+        </div>
+      </div>
+      <button class="icon-btn themeBtn" title="מצב יום / לילה" aria-label="מצב יום או לילה">🌙</button>
+    </div>
+
+    <!-- POSTER -->
+    <div class="poster" id="poster">
+      <div class="poster-art">
+        <img src="https://media.base44.com/images/public/6a145a94ece46facb4bc5a92/6db559df9_generated_image.png" alt="איור של תלמידים קוראים ספרים">
+      </div>
+      <div class="poster-body">
+        <span class="poster-kicker">בית הספר · תחרות קריאה</span>
+        <h2 class="poster-title">תחרות סיפרידלין</h2>
+        <p class="poster-sub">קוראים ספר, עונים על השאלות של המשחקון, וצוברים נקודות לזכות הכיתה.</p>
+
+        <div class="prizes">
+          <div class="prize-card gold">
+            <span class="prize-num">2</span>
+            <span class="prize-lbl">כיתות זוכות</span>
+            <span class="prize-note">שתי הכיתות עם הניקוד הגבוה ביותר</span>
+          </div>
+          <div class="prize-card silver">
+            <span class="prize-num">3</span>
+            <span class="prize-lbl">תלמידים זוכים</span>
+            <span class="prize-note">שלושת התלמידים עם הניקוד הגבוה ביותר</span>
+          </div>
+        </div>
+
+        <ul class="poster-rules">
+          <li><b>נרשמים:</b> שם פרטי, שם משפחה ובחירת כיתה — לפני שמתחילים לשחק.</li>
+          <li><b>כל נקודה נספרת לכיתה:</b> מה שתשיגו עובר ישר לטבלת הכיתה שלכם.</li>
+          <li><b>25 ספרים:</b> בכל משחקון עד <b>40 נקודות</b> ולכל היותר <b>שני ניסיונות</b>.</li>
+          <li><b>אורך המשחקון לפי שכבה:</b> 5 שאלות בא'-ב', 6 בג'-ד', 8 בה'-ו'.</li>
+        </ul>
+
+        <p class="poster-foot">הזוכים נקבעים לפי לוח הניקוד באתר: הניקוד המצטבר של כל כיתה, והניקוד האישי של כל תלמיד.</p>
+      </div>
+    </div>
+
+    <!-- EXPLAINER -->
+    <div class="player" id="player">
+      <div class="player-head">
+        <span>🎬 סרטון הסבר — איך נכנסים ומשחקים</span>
+        <span class="player-count" id="slideCount">1/7</span>
+      </div>
+      <div class="stage" id="stage"></div>
+      <div class="player-progress"><i id="slideBar"></i></div>
+      <div class="player-ctrl">
+        <button class="btn ghost sm" id="prevSlide">→ הקודם</button>
+        <button class="btn sm" id="playBtn">⏸ עצור</button>
+        <button class="btn ghost sm" id="nextSlide">הבא ←</button>
+        <span class="player-note">7 שלבים · מונפש, ללא קול</span>
+      </div>
+    </div>
+
+    <div class="intro-actions">
+      <button class="btn" id="introGo">קראתי, אפשר להירשם ←</button>
+    </div>
+  </section>
+
 
   <!-- ============ REGISTER ============ -->
   <section id="screen-register" class="screen">
@@ -311,7 +540,10 @@ table.mini-table{width:100%}
           <p>משחק הספרים של בית הספר · 25 משחקונים</p>
         </div>
       </div>
-      <button class="icon-btn themeBtn" title="מצב יום / לילה" aria-label="מצב יום או לילה">🌙</button>
+      <div class="topbtns">
+        <button class="icon-btn" id="introBtnReg" title="על התחרות" aria-label="על התחרות">📣</button>
+        <button class="icon-btn themeBtn" title="מצב יום / לילה" aria-label="מצב יום או לילה">🌙</button>
+      </div>
     </div>
 
     <div class="panel reg">
@@ -353,6 +585,7 @@ table.mini-table{width:100%}
         </div>
       </div>
       <div class="topbtns">
+        <button class="icon-btn" id="introBtnHome" title="על התחרות" aria-label="על התחרות">📣</button>
         <button class="icon-btn" id="switchBtn" title="החלפת תלמיד" aria-label="החלפת תלמיד">👤</button>
         <button class="icon-btn themeBtn" title="מצב יום / לילה" aria-label="מצב יום או לילה">🌙</button>
       </div>
@@ -892,7 +1125,7 @@ var EXTRA_QUESTIONS = {
      ספריית המשחקונים · משחק בית ספרי לפי כיתות
      ------------------------------------------------------------
      • כל תלמיד נרשם עם שם פרטי, שם משפחה וכיתה לפני שהוא משחק.
-     • 20 כיתות (א'1 ... ו'4). כל נקודה נספרת לזכות הכיתה.
+     • 20 כיתות (א&#39;1 ... ו&#39;4). כל נקודה נספרת לזכות הכיתה.
      • כל משחקון שווה עד 40 נקודות (לפי אחוז התשובות הנכונות),
        ואפשר לשחק בכל משחקון פעמיים בלבד.
      • אורך משחקון לפי שכבה: א'-ב' 5 שאלות, ג'-ד' 6, ה'-ו' 8
@@ -908,7 +1141,7 @@ var EXTRA_QUESTIONS = {
   var MAX_SCORES = 4000;
   var PRIZES = 3;
 
-  var db = { students: [], activeId: null, scores: [], theme: 'light' };
+  var db = { students: [], activeId: null, scores: [], theme: 'light', seenIntro: false };
   var game = null;
   var scoresTab = 'classes';
   var expandedClasses = {};
@@ -1006,6 +1239,7 @@ var EXTRA_QUESTIONS = {
         db.scores = Array.isArray(p.scores) ? p.scores.filter(function (x) { return x && x.g && typeof x.s === 'number'; }) : [];
         db.activeId = p.activeId || null;
         db.theme = p.theme === 'dark' ? 'dark' : 'light';
+        db.seenIntro = !!p.seenIntro;
       } catch (e) { db = emptyDb(); }
       if (!studentById(db.activeId) && db.students.length) db.activeId = db.students[0].id;
       return;
@@ -1209,10 +1443,131 @@ var EXTRA_QUESTIONS = {
   }
 
   /* ---------------- מסכים ---------------- */
+
+  /* ---------------- מצגת ההסבר (פוסטר + סרטון) ---------------- */
+  var SLIDE_MS = 6500;
+  var slideIdx = 0;
+  var slideTimer = null;
+  var slidePlaying = true;
+
+  function slideVisualClassChips() {
+    var out = '<div class="mock mock-chips">';
+    var shown = ["א&#39;1", "א&#39;2", "ב&#39;1", "ג&#39;3", "ד&#39;2", "ה&#39;1", "ו&#39;2", "ו&#39;4"];
+    for (var i = 0; i < shown.length; i++) {
+      out += '<span' + (shown[i] === "ו&#39;2" ? ' class="on"' : '') + '>' + shown[i] + '</span>';
+    }
+    return out + '</div>';
+  }
+
+  function slideVisualForm() {
+    return '<div class="mock mock-form">' +
+      '<div class="mrow"><label>שם פרטי</label><i>נועה</i></div>' +
+      '<div class="mrow"><label>שם משפחה</label><i>כהן</i></div>' +
+      '<div class="mrow"><label>כיתה</label><i>ו&#39;2</i></div>' +
+      '<em class="mbtn">מתחילים לשחק ←</em>' +
+      '</div>';
+  }
+
+  function slideVisualBooks() {
+    var books = [['🐶', 'איה פלוטו', '0/2'], ['🐻', 'פו הדב', '1/2'], ['📚', 'מטילדה', '2/2']];
+    var out = '<div class="mock mock-books">';
+    for (var i = 0; i < books.length; i++) {
+      out += '<div class="mbook' + (books[i][2] === '2/2' ? ' spent' : '') + '">' +
+        '<span class="me">' + books[i][0] + '</span>' +
+        '<b>' + books[i][1] + '</b>' +
+        '<small>' + books[i][2] + '</small>' +
+        '</div>';
+    }
+    return out + '</div>';
+  }
+
+  function slideVisualQuestion() {
+    return '<div class="mock mock-q">' +
+      '<div class="mq-top"><span>שאלה 2 מתוך 8</span><b>5 נק׳</b></div>' +
+      '<p>איך קוראים לילדה שמגלה שהיא יכולה להזיז חפצים במחשבה?</p>' +
+      '<div class="mopts">' +
+      '<i>אליס</i><i class="ok">מטילדה ✓</i><i>סינדרלה</i><i>דורותי</i>' +
+      '</div>' +
+      '<div class="mfb">נכון! מטילדה מגלה את הכוח שלה מול המיס טרנצ&#39;בול.</div>' +
+      '</div>';
+  }
+
+  function slideVisualAttempts() {
+    return '<div class="mock mock-att">' +
+      '<div class="mring"><b>35</b><small>מתוך 40</small></div>' +
+      '<div class="matt"><span>ניסיון 2 מתוך 2</span><span class="mused">2/2 · נוצל</span></div>' +
+      '</div>';
+  }
+
+  function slideVisualClasses() {
+    return '<div class="mock mock-table">' +
+      '<div class="mtr mhead"><span>כיתה</span><span>ניקוד</span><span>ממוצע</span></div>' +
+      '<div class="mtr"><span>ו&#39;2</span><span>120</span><span>40</span></div>' +
+      '<div class="mtr"><span>ג&#39;1</span><span>96</span><span>32</span></div>' +
+      '<div class="mtr"><span>א&#39;1</span><span>64</span><span>21</span></div>' +
+      '</div>';
+  }
+
+  function slideVisualPodium() {
+    return '<div class="mock mock-podium">' +
+      '<div class="mpod p2"><span>🥈</span><b>מטילדה</b><small>ו&#39;2</small></div>' +
+      '<div class="mpod p1"><span>🥇</span><b>נועה</b><small>ו&#39;2</small></div>' +
+      '<div class="mpod p3"><span>🥉</span><b>יואב</b><small>ג&#39;1</small></div>' +
+      '</div>';
+  }
+
+  var SLIDES = [
+    { t: 'שלב 1 · בוחרים כיתה', c: 'במסך הכניסה בוחרים כיתה מהרשימה: א\'1 עד ו\'4. כל נקודה שתרוויחו תירשם לזכות הכיתה הזו.', v: slideVisualClassChips },
+    { t: 'שלב 2 · שם פרטי ושם משפחה', c: 'ממלאים שם פרטי ושם משפחה, בוחרים כיתה, ולוחצים "מתחילים לשחק". בלי שלושת הפרטים אי אפשר להיכנס למשחקונים.', v: slideVisualForm },
+    { t: 'שלב 3 · בוחרים ספר', c: 'במסך הבית מחכים 25 ספרים. לוחצים על ספר ומתחילים, ועל כל כרטיס רואים כמה ניסיונות נותרו.', v: slideVisualBooks },
+    { t: 'שלב 4 · עונים על השאלות', c: 'בכל משחקון 5 עד 8 שאלות. בוחרים תשובה, מקבלים הסבר קצר, ועוברים הלאה. רצף של תשובות נכונות מוצג למעלה.', v: slideVisualQuestion },
+    { t: 'שלב 5 · שני ניסיונות ועד 40 נקודות', c: 'כל משחקון שווה עד 40 נקודות לפי אחוז התשובות הנכונות, ואפשר לשחק בו פעמיים בלבד. בכרטיס הספר יופיע 2/2 וסימון "נוצל".', v: slideVisualAttempts },
+    { t: 'שלב 6 · לוח הכיתות', c: 'בלוח הניקוד רואים כל כיתה, את הניקוד הכולל ואת הממוצע לתלמיד. לחיצה על כיתה פותחת את התלמידים ומראה מי הביא כל נקודה.', v: slideVisualClasses },
+    { t: 'שלב 7 · הפרסים', c: 'בסוף התחרות שתי הכיתות המובילות ושלושת התלמידים המובילים מקבלים פרס. הלוח מתעדכן אוטומטית אחרי כל משחקון.', v: slideVisualPodium }
+  ];
+
+  function renderSlide() {
+    var stage = $('stage');
+    if (!stage) return;
+    var s = SLIDES[slideIdx];
+    stage.innerHTML = '<div class="slide">' +
+      '<div class="slide-text"><h3>' + esc(s.t) + '</h3><p>' + esc(s.c) + '</p></div>' +
+      '<div class="slide-visual">' + s.v() + '</div>' +
+      '</div>';
+    $('slideCount').textContent = (slideIdx + 1) + '/' + SLIDES.length;
+    $('slideBar').style.width = ((slideIdx + 1) / SLIDES.length * 100) + '%';
+    $('playBtn').textContent = slidePlaying ? '⏸ עצור' : '▶ הפעל';
+  }
+
+  function clearSlideTimer() {
+    if (slideTimer) { clearInterval(slideTimer); slideTimer = null; }
+  }
+
+  function scheduleSlide() {
+    clearSlideTimer();
+    if (!slidePlaying) return;
+    slideTimer = setInterval(function () { gotoSlide(slideIdx + 1); }, SLIDE_MS);
+  }
+
+  function gotoSlide(i) {
+    slideIdx = ((i % SLIDES.length) + SLIDES.length) % SLIDES.length;
+    renderSlide();
+    scheduleSlide();
+  }
+
+  function showIntro() {
+    slideIdx = 0;
+    slidePlaying = true;
+    show('screen-intro');
+    renderSlide();
+    scheduleSlide();
+  }
+
   function show(id) {
     var all = document.querySelectorAll('.screen');
     for (var i = 0; i < all.length; i++) all[i].classList.remove('on');
     $(id).classList.add('on');
+    if (id !== 'screen-intro') clearSlideTimer();
     window.scrollTo(0, 0);
   }
   function applyTheme() {
@@ -1818,6 +2173,23 @@ var EXTRA_QUESTIONS = {
     // החלפת תלמיד: פותחים טופס נקי, והתלמידים הקיימים זמינים ברשימה למטה
     $('switchBtn').addEventListener('click', function () { renderRegister(true); });
 
+    $('introGo').addEventListener('click', function () {
+      db.seenIntro = true;
+      saveDb();
+      clearSlideTimer();
+      if (activeRegistered()) { renderHome(); show('screen-home'); }
+      else renderRegister();
+    });
+    $('nextSlide').addEventListener('click', function () { gotoSlide(slideIdx + 1); });
+    $('prevSlide').addEventListener('click', function () { gotoSlide(slideIdx - 1); });
+    $('playBtn').addEventListener('click', function () {
+      slidePlaying = !slidePlaying;
+      renderSlide();
+      scheduleSlide();
+    });
+    $('introBtnReg').addEventListener('click', showIntro);
+    $('introBtnHome').addEventListener('click', showIntro);
+
     $('bookGrid').addEventListener('click', function (e) {
       var btn = e.target.closest ? e.target.closest('.book') : null;
       if (!btn) return;
@@ -1911,7 +2283,8 @@ var EXTRA_QUESTIONS = {
   renderHome();
   renderScores();
 
-  if (activeRegistered()) show('screen-home');
+  if (!db.seenIntro) showIntro();
+  else if (activeRegistered()) show('screen-home');
   else renderRegister();
 
   window.__booksGame = {
@@ -1921,6 +2294,7 @@ var EXTRA_QUESTIONS = {
     api: {
       addScore: addScore, bestScore: bestScore, bestRecord: bestRecord, scoreFor: scoreFor,
       attemptsUsed: attemptsUsed, attemptsLeft: attemptsLeft, maxAttempts: MAX_ATTEMPTS, maxPerGame: MAX_PER_GAME,
+      slides: SLIDES, showIntro: showIntro, gotoSlide: gotoSlide, slideIndex: function () { return slideIdx; },
       studentTotals: studentTotals, studentRows: studentRows, classBoard: classBoard, gameBoard: gameBoard,
       ensureStudent: ensureStudent, deleteStudent: deleteStudent, isRegistered: isRegistered,
       questionsForGrade: questionsForGrade, gradePlan: gradePlan, fullName: fullName,
