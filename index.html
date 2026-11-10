@@ -1234,7 +1234,17 @@ var EXTRA_QUESTIONS = {
     if (!last) { err.textContent = 'צריך למלא שם משפחה.'; $('regLast').focus(); return; }
     if (!cls) { err.textContent = 'צריך לבחור כיתה מהרשימה.'; $('regClass').focus(); return; }
 
-    var st = ensureStudent({ first: first, last: last, cls: cls });
+    // אם התלמיד הפעיל הוא רשומה חלקית (בלי שם משפחה או כיתה), משלימים אותה במקום לפתוח כפילות
+    var cur = activeStudent();
+    var st = null;
+    if (cur && (!cur.last || !cur.cls) && cleanPart(cur.first).toLowerCase() === first.toLowerCase()) {
+      cur.last = last;
+      cur.cls = cls;
+      saveDb();
+      st = cur;
+    } else {
+      st = ensureStudent({ first: first, last: last, cls: cls });
+    }
     if (!st) { err.textContent = 'משהו לא תקין בשם, נסו שוב.'; return; }
     db.activeId = st.id;
     saveDb();
