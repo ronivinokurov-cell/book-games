@@ -1,0 +1,1704 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ספריית המשחקונים · 25 משחקונים על ספרים</title>
+<meta name="description" content="25 משחקונים על ספרים ליסודי, עם מערכת ניקוד ושמות שחקנים">
+<style>:root{
+  --bg:#f6f3ea;
+  --bg2:#efe9dc;
+  --card:#ffffff;
+  --text:#241f1a;
+  --muted:#6f665c;
+  --line:#e2d9c8;
+  --brand:#c0562f;
+  --brand2:#e0a13b;
+  --ok:#2f9e63;
+  --bad:#c94a3f;
+  --shadow:0 8px 24px rgba(80,60,30,.10);
+  --radius:18px;
+}
+[data-theme="dark"]{
+  --bg:#161311;
+  --bg2:#1e1a17;
+  --card:#241f1c;
+  --text:#f4ede2;
+  --muted:#a89c8e;
+  --line:#3a322c;
+  --brand:#e8804f;
+  --brand2:#f0bb62;
+  --ok:#4ecb87;
+  --bad:#ef6b5e;
+  --shadow:0 10px 28px rgba(0,0,0,.45);
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  font-family:"Segoe UI","Arial Hebrew",Rubik,Arial,sans-serif;
+  background:
+    radial-gradient(1200px 600px at 80% -10%, rgba(224,161,59,.20), transparent 60%),
+    radial-gradient(900px 500px at 0% 110%, rgba(192,86,47,.16), transparent 60%),
+    var(--bg);
+  color:var(--text);
+  min-height:100vh;
+  -webkit-tap-highlight-color:transparent;
+}
+.wrap{max-width:1040px;margin:0 auto;padding:18px 16px 44px}
+button{font-family:inherit;cursor:pointer}
+.screen{display:none;animation:fade .25s ease}
+.screen.on{display:block}
+@keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+/* ---------- header ---------- */
+.top{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:14px}
+.logo{display:flex;align-items:center;gap:10px}
+.logo .mark{
+  width:46px;height:46px;border-radius:14px;display:grid;place-items:center;font-size:24px;
+  background:linear-gradient(150deg,var(--brand),var(--brand2));box-shadow:var(--shadow);
+}
+.logo h1{font-size:22px;margin:0;letter-spacing:-.4px}
+.logo p{margin:2px 0 0;font-size:13px;color:var(--muted)}
+.icon-btn{
+  background:var(--card);border:1px solid var(--line);color:var(--text);
+  width:42px;height:42px;border-radius:12px;font-size:18px;box-shadow:var(--shadow)
+}
+
+/* ---------- player bar ---------- */
+.panel{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow)}
+.player{padding:14px;display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin-bottom:18px}
+.player label{font-size:13px;color:var(--muted);display:block;margin-bottom:5px}
+.player input{
+  font-family:inherit;font-size:16px;padding:10px 12px;border-radius:12px;
+  border:1px solid var(--line);background:var(--bg2);color:var(--text);min-width:180px;flex:1 1 180px
+}
+.player input:focus{outline:2px solid var(--brand2);outline-offset:1px}
+.stats{display:flex;gap:8px;flex-wrap:wrap;margin-inline-start:auto}
+.chip{background:var(--bg2);border:1px solid var(--line);border-radius:999px;padding:8px 14px;font-size:13px;color:var(--muted)}
+.chip b{color:var(--text);font-size:15px}
+
+/* ---------- book grid ---------- */
+.section-head{display:flex;align-items:baseline;justify-content:space-between;margin:22px 4px 10px}
+.section-head h2{font-size:17px;margin:0}
+.section-head span{font-size:13px;color:var(--muted)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:14px}
+.book{
+  position:relative;text-align:right;border:none;padding:0;border-radius:var(--radius);
+  overflow:hidden;box-shadow:var(--shadow);color:#fff;transition:transform .16s ease, box-shadow .16s ease;
+  background:linear-gradient(155deg,hsl(var(--h) 62% 46%),hsl(var(--h) 58% 32%));
+}
+.book:hover{transform:translateY(-3px);box-shadow:0 14px 30px rgba(60,40,20,.22)}
+.book:active{transform:translateY(0) scale(.99)}
+.book .inner{padding:16px 14px 14px;display:flex;flex-direction:column;gap:8px;min-height:158px}
+.book .emoji{font-size:34px;line-height:1;filter:drop-shadow(0 3px 6px rgba(0,0,0,.25))}
+.book .title{font-size:16px;font-weight:700;line-height:1.25;text-shadow:0 1px 3px rgba(0,0,0,.2)}
+.book .author{font-size:12.5px;opacity:.85}
+.book .foot{margin-top:auto;display:flex;align-items:center;justify-content:space-between;gap:6px;font-size:12.5px}
+.book .play{background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.45);border-radius:999px;padding:6px 12px;color:#fff;font-size:12.5px;font-weight:600}
+.book .done{background:rgba(255,255,255,.9);color:hsl(var(--h) 60% 30%);border-radius:999px;padding:5px 10px;font-weight:700;font-size:12px}
+.book .cover-emoji{position:absolute;inset-inline-start:-6px;bottom:-14px;font-size:78px;opacity:.16;pointer-events:none}
+
+/* ---------- game ---------- */
+.gamebar{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+.gamebar .back{background:var(--card);border:1px solid var(--line);color:var(--text);border-radius:12px;padding:9px 13px;font-size:14px;box-shadow:var(--shadow)}
+.gamebar .who{flex:1;min-width:0}
+.gamebar .who .t{font-size:16px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.gamebar .who .a{font-size:12.5px;color:var(--muted)}
+.gamebar .pts{font-weight:800;font-size:16px;color:var(--brand)}
+.qmeta{display:flex;align-items:center;justify-content:space-between;font-size:13px;color:var(--muted);margin:0 4px 8px}
+.bar{height:9px;border-radius:99px;background:var(--line);overflow:hidden;margin:0 4px 18px}
+.bar i{display:block;height:100%;width:0;border-radius:99px;background:linear-gradient(90deg,var(--brand),var(--brand2));transition:width .3s ease}
+
+.qcard{padding:20px 18px}
+.qcard .qq{font-size:20px;font-weight:700;line-height:1.45;margin:0 0 4px}
+.qcard .hint{font-size:13px;color:var(--muted);margin:0 0 16px}
+.opts{display:grid;gap:10px}
+.opt{
+  text-align:right;background:var(--bg2);border:1.5px solid var(--line);color:var(--text);
+  border-radius:14px;padding:14px 16px;font-size:16px;line-height:1.35;transition:.15s;
+  display:flex;align-items:center;gap:10px
+}
+.opt .k{
+  width:26px;height:26px;border-radius:9px;display:grid;place-items:center;font-size:13px;font-weight:700;
+  background:var(--card);border:1px solid var(--line);color:var(--muted);flex:0 0 auto
+}
+.opt:hover:not(:disabled){border-color:var(--brand2);transform:translateY(-1px)}
+.opt:disabled{cursor:default;opacity:.95}
+.opt.ok{border-color:var(--ok);background:color-mix(in srgb,var(--ok) 16%,var(--bg2))}
+.opt.ok .k{background:var(--ok);color:#fff;border-color:var(--ok)}
+.opt.bad{border-color:var(--bad);background:color-mix(in srgb,var(--bad) 14%,var(--bg2))}
+.opt.bad .k{background:var(--bad);color:#fff;border-color:var(--bad)}
+.fb{margin-top:14px;border-radius:14px;padding:13px 15px;font-size:14.5px;line-height:1.5;display:none}
+.fb.on{display:block;animation:fade .2s ease}
+.fb.good{background:color-mix(in srgb,var(--ok) 14%,var(--card));border:1px solid var(--ok)}
+.fb.wrong{background:color-mix(in srgb,var(--bad) 12%,var(--card));border:1px solid var(--bad)}
+.fb b{display:block;margin-bottom:3px}
+.actions{display:flex;justify-content:flex-end;margin-top:14px}
+.btn{
+  border:none;border-radius:14px;padding:13px 22px;font-size:16px;font-weight:700;
+  background:linear-gradient(150deg,var(--brand),var(--brand2));color:#fff;box-shadow:var(--shadow)
+}
+.btn.ghost{background:var(--card);color:var(--text);border:1px solid var(--line)}
+.btn:active{transform:scale(.985)}
+
+/* ---------- end ---------- */
+.end{text-align:center;padding:26px 20px}
+.end .big{font-size:56px;line-height:1}
+.end h2{margin:10px 0 4px;font-size:24px}
+.end .sub{color:var(--muted);font-size:14px;margin:0 0 6px}
+.stars{font-size:28px;letter-spacing:4px;margin:8px 0 4px}
+.endscore{font-size:44px;font-weight:800;color:var(--brand);line-height:1.1}
+.end .row{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:20px}
+
+/* ---------- scores ---------- */
+.filters{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:14px}
+select{
+  font-family:inherit;font-size:14px;padding:10px 12px;border-radius:12px;
+  border:1px solid var(--line);background:var(--card);color:var(--text)
+}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th,td{padding:10px 8px;text-align:right;border-bottom:1px solid var(--line)}
+th{font-size:12.5px;color:var(--muted);font-weight:600;white-space:nowrap}
+tbody tr:last-child td{border-bottom:none}
+td.num{font-weight:700}
+.rank{width:34px;color:var(--muted)}
+.rank.gold{color:#c99000}
+.empty{padding:26px;text-align:center;color:var(--muted);font-size:14px}
+.tabs{display:flex;gap:8px;margin:6px 0 14px}
+.tab{background:var(--bg2);border:1px solid var(--line);color:var(--muted);border-radius:999px;padding:9px 16px;font-size:14px}
+.tab.on{background:var(--brand);border-color:var(--brand);color:#fff;font-weight:700}
+.tblwrap{overflow-x:auto}
+.footnote{font-size:12.5px;color:var(--muted);margin-top:14px;line-height:1.6}
+.danger{background:none;border:none;color:var(--bad);font-size:13px;text-decoration:underline;padding:0}
+@media (max-width:520px){
+  .logo h1{font-size:19px}
+  .grid{grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:11px}
+  .book .inner{min-height:140px;padding:13px 12px}
+  .book .title{font-size:14.5px}
+  .qcard .qq{font-size:18px}
+  .opt{font-size:15px;padding:13px 14px}
+  .stats{margin-inline-start:0;width:100%}
+}
+
+/* ---------- שחקנים שמורים ---------- */
+.pfield{flex:1 1 260px;min-width:0}
+.pinput{display:flex;gap:8px;align-items:center}
+.pinput input{flex:1 1 auto;min-width:120px}
+.mini{
+  font-family:inherit;font-size:13px;background:var(--bg2);border:1px solid var(--line);
+  color:var(--text);border-radius:11px;padding:9px 12px;white-space:nowrap
+}
+.mini:hover{border-color:var(--brand2)}
+.mini.danger2{color:var(--bad);border-color:color-mix(in srgb,var(--bad) 40%,var(--line))}
+.pchips{display:flex;gap:7px;flex-wrap:wrap;margin-top:10px}
+.pchip{
+  font-family:inherit;font-size:13px;background:var(--bg2);border:1px solid var(--line);
+  color:var(--text);border-radius:999px;padding:7px 13px
+}
+.pchip b{color:var(--muted);font-weight:600;font-size:12px;margin-inline-start:3px}
+.pchip:hover{border-color:var(--brand2)}
+.pchip.on{background:linear-gradient(150deg,var(--brand),var(--brand2));border-color:transparent;color:#fff;font-weight:700}
+.pchip.on b{color:rgba(255,255,255,.8)}
+.ghostchip{border-style:dashed;color:var(--muted)}
+
+/* ---------- לוח ניקוד ---------- */
+.tag{font-size:11px;background:color-mix(in srgb,var(--brand) 18%,var(--card));color:var(--brand);border-radius:6px;padding:2px 6px;font-weight:700}
+.plink{background:none;border:none;color:var(--text);font:inherit;font-weight:600;padding:0;text-decoration:underline dotted}
+.plink:hover{color:var(--brand)}
+tr.me td{background:color-mix(in srgb,var(--brand) 7%,transparent)}
+.rowbtns{white-space:nowrap;text-align:left}
+.ic{background:none;border:1px solid var(--line);border-radius:9px;padding:4px 7px;font-size:13px;margin-inline-start:4px;color:var(--text)}
+.ic:hover{border-color:var(--brand2)}
+.danger3{color:var(--bad)}
+.play-mini{padding:6px 12px}
+.gname{display:block;font-weight:600;font-size:14px}
+.gsub{display:block;font-size:12px;color:var(--muted);margin-top:2px}
+.muted{color:var(--muted)}
+
+/* ---------- כלים ---------- */
+.tools{margin-top:16px;padding:14px 16px}
+.tools-title{font-size:13px;color:var(--muted);margin-bottom:10px}
+.tools-row{display:flex;gap:8px;flex-wrap:wrap}
+
+/* ---------- שיא אישי במסך הסיום ---------- */
+.recline{margin:12px 0 0;font-size:14px;display:flex;flex-direction:column;gap:4px}
+.rec{background:color-mix(in srgb,var(--ok) 16%,var(--card));border:1px solid var(--ok);border-radius:10px;padding:7px 12px;font-weight:700}
+
+/* ---------- כיתה ---------- */
+.pfield.cls{flex:0 0 150px}
+.pfield.cls select{width:100%}
+select{max-width:100%}
+tr.dim td{opacity:.55}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- ============ HOME ============ -->
+  <section id="screen-home" class="screen on">
+    <div class="top">
+      <div class="logo">
+        <div class="mark">📚</div>
+        <div>
+          <h1>ספריית המשחקונים</h1>
+          <p>25 משחקונים · 25 ספרים אהובים</p>
+        </div>
+      </div>
+      <button class="icon-btn" id="themeBtn" title="מצב יום / לילה" aria-label="מצב יום או לילה">🌙</button>
+    </div>
+
+    <div class="panel player">
+      <div class="pfield">
+        <label for="playerName">שם השחקן / השחקנית</label>
+        <div class="pinput">
+          <input id="playerName" maxlength="16" placeholder="שם חדש או שם קיים" autocomplete="off">
+          <button class="mini" id="newPlayerBtn" title="שחקן חדש">＋ שחקן חדש</button>
+        </div>
+        <div class="pchips" id="playerChips"></div>
+      </div>
+      <div class="pfield cls">
+        <label for="classSel">כיתה</label>
+        <select id="classSel"></select>
+      </div>
+      <div class="stats" id="homeStats"></div>
+    </div>
+
+    <div class="section-head">
+      <h2>בחרו ספר ומתחילים</h2>
+      <span id="progressTxt"></span>
+    </div>
+    <div class="grid" id="bookGrid"></div>
+
+    <div style="margin-top:22px;display:flex;gap:10px;flex-wrap:wrap">
+      <button class="btn" id="toScores">🏆 לוח ניקוד ותוצאות</button>
+    </div>
+    <p class="footnote">
+      בכל משחקון 5 שאלות על ספר אחד. תשובה נכונה = 100 נקודות, ורצף תשובות נכונות מעניק בונוס.
+      השמות והתוצאות נשמרים במכשיר הזה, כך שכל שחקן יכול לחזור ולשבור את השיא שלו.
+    </p>
+  </section>
+
+  <!-- ============ GAME ============ -->
+  <section id="screen-game" class="screen">
+    <div class="gamebar">
+      <button class="back" id="quitBtn">→ יציאה</button>
+      <div class="who">
+        <div class="t" id="gameTitle">—</div>
+        <div class="a" id="gameAuthor">—</div>
+      </div>
+      <div class="pts" id="gamePts">0</div>
+    </div>
+    <div class="qmeta">
+      <span id="qCounter">שאלה 1 מתוך 5</span>
+      <span id="qStreak"></span>
+    </div>
+    <div class="bar"><i id="qBar"></i></div>
+
+    <div class="panel qcard">
+      <p class="qq" id="qText">—</p>
+      <p class="hint" id="qHint">בחרו תשובה אחת</p>
+      <div class="opts" id="qOpts"></div>
+      <div class="fb" id="qFb"></div>
+      <div class="actions"><button class="btn" id="nextBtn" style="display:none">הבא ←</button></div>
+    </div>
+  </section>
+
+  <!-- ============ END ============ -->
+  <section id="screen-end" class="screen">
+    <div class="panel end">
+      <div class="big" id="endEmoji">🏅</div>
+      <h2 id="endTitle">כל הכבוד!</h2>
+      <p class="sub" id="endBook">—</p>
+      <div class="stars" id="endStars"></div>
+      <div class="endscore"><span id="endScore">0</span> <span style="font-size:18px;color:var(--muted)">נקודות</span></div>
+      <p class="sub" id="endCorrect"></p>
+      <p class="sub" id="endWho"></p>
+      <p class="recline" id="endRecord"></p>
+      <div class="row">
+        <button class="btn" id="againBtn">שחקו שוב</button>
+        <button class="btn ghost" id="endHomeBtn">לכל המשחקונים</button>
+        <button class="btn ghost" id="endScoresBtn">לוח ניקוד</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ SCORES ============ -->
+  <section id="screen-scores" class="screen">
+    <div class="top">
+      <div class="logo">
+        <div class="mark">🏆</div>
+        <div>
+          <h1>לוח ניקוד ותוצאות</h1>
+          <p>כל 25 המשחקונים · כל השחקנים השמורים</p>
+        </div>
+      </div>
+      <button class="icon-btn" id="backHome2" title="חזרה">✕</button>
+    </div>
+
+    <div class="tabs">
+      <button class="tab on" data-tab="classes">כיתות</button>
+      <button class="tab" data-tab="players">מובילים</button>
+      <button class="tab" data-tab="records">שיאים לפי משחקון</button>
+      <button class="tab" data-tab="results">כל התוצאות</button>
+    </div>
+
+    <div class="filters" id="filtersRow">
+      <select id="playerFilter"><option value="">כל השחקנים</option></select>
+      <select id="classFilter"><option value="">כל הכיתות</option></select>
+      <select id="bookFilter"><option value="">כל הספרים</option></select>
+      <select id="sortSel">
+        <option value="score">מיון: ניקוד גבוה</option>
+        <option value="recent">מיון: חדש קודם</option>
+        <option value="accuracy">מיון: דיוק</option>
+      </select>
+      <span class="chip" id="scoresCount"></span>
+    </div>
+
+    <div class="panel" style="padding:6px 12px" id="scoresTable"></div>
+    <div id="scoresMore"></div>
+
+    <div class="panel tools">
+      <div class="tools-title">ניהול וגיבוי</div>
+      <div class="tools-row">
+        <button class="mini" id="exportBtn">⬇ ייצוא תוצאות</button>
+        <button class="mini" id="importBtn">⬆ ייבוא תוצאות</button>
+        <button class="mini danger2" id="clearScores">מחיקת כל התוצאות</button>
+        <input type="file" id="importFile" accept=".json,application/json" style="display:none">
+      </div>
+      <p class="footnote" id="exportNote"></p>
+    </div>
+  </section>
+
+</div>
+<script>// 25 משחקונים על ספרים ליסודי. כל משחקון = ספר אחר + 5 שאלות.
+// כל שאלה: {q, a:[אפשרויות], c: אינדקס התשובה הנכונה, e: הסבר קצר}
+const BOOKS = [
+  {
+    id: 'pluto', title: 'איה פלוטו', author: 'לאה גולדברג', emoji: '🐶', hue: 32,
+    questions: [
+      { q: 'מה פירוש השם "איה פלוטו"?', a: ['איפה פלוטו?', 'מי אכל את פלוטו?', 'למה פלוטו בוכה?', 'כמה גדול פלוטו?'], c: 0, e: 'המילה "איה" פירושה "איפה". הספר נקרא כך כי השאלה חוזרת לאורך כל הסיפור.' },
+      { q: 'מי כתבה את "איה פלוטו"?', a: ['לאה גולדברג', 'מרים רות', 'מיריק שניר', 'מאיר שלו'], c: 0, e: 'לאה גולדברג כתבה גם את "דירה להשכיר" ו"המפוזר מכפר אז"ר".' },
+      { q: 'מהו פלוטו?', a: ['כלבלב', 'חתלתול', 'ארנבון', 'דג'], c: 0, e: 'פלוטו הוא כלבלב קטן וסקרן.' },
+      { q: 'בסוף הסיפור פלוטו חוזר הביתה אל אמא שלו.', a: ['נכון', 'לא נכון'], c: 0, e: 'כן. אחרי טיול בעולם הוא חוזר הביתה, וכל זה בחרוזים.' },
+      { q: 'באיזו צורה כתוב הספר?', a: ['בחרוזים', 'כמכתבים', 'כיומן', 'בקומיקס'], c: 0, e: 'הסיפור כולו מחורז, ולכן קל וכויף לקרוא אותו בקול.' },
+    ],
+  },
+  {
+    id: 'mevuzar', title: 'המפוזר מכפר אז"ר', author: 'לאה גולדברג', emoji: '🎩', hue: 280,
+    questions: [
+      { q: 'על מי מסופר בספר?', a: ['איש מפוזר אחד', 'ילדה שמחפשת כלב', 'חתול שמחפש בית', 'סבא שמספר סיפורים'], c: 0, e: 'כל הסיפור עניין של איש אחד מפוזר, שמתקשה לזכור היכן הניח כל דבר.' },
+      { q: 'מה שם הספר?', a: ['המפוזר מכפר אז"ר', 'השכחן מכפר אז"ר', 'הנמרץ מכפר אז"ר', 'החולם מכפר אז"ר'], c: 0, e: 'זהו "המפוזר מכפר אז"ר" מאת לאה גולדברג.' },
+      { q: 'על פי איזה סיפור נכתב הספר?', a: ['סיפור של הסופר הרוסי סמואיל מרשק', 'סיפור של האחים גרים', 'מעשייה של אנדרסן', 'סיפור עם מאפריקה'], c: 0, e: 'לאה גולדברג עיבדה סיפור של סמואיל מרשק לעברית, והוסיפה לו חרוזים משל עצמה.' },
+      { q: 'המפוזר מכפר אז"ר כתוב בחרוזים.', a: ['נכון', 'לא נכון'], c: 0, e: 'נכון. גם "איה פלוטו", מאותה סופרת, כתוב בחרוזים.' },
+      { q: 'איך מרגיש הקורא כשהוא קורא את הסיפור?', a: ['מצחיק על המבולבל, ואולי מזכיר לו את עצמו', 'עצוב מאוד', 'מפחיד', 'משעמם'], c: 0, e: 'ההומור הוא לב הספר: כולנו שוכחים לפעמים איפה שמנו את המשקפיים.' },
+    ],
+  },
+  {
+    id: 'dira', title: 'דירה להשכיר', author: 'לאה גולדברג', emoji: '🏠', hue: 12,
+    questions: [
+      { q: 'מה מחפשים בעלי החיים בסיפור?', a: ['דירה לשכירות', 'מטמון של זהב', 'עבודה', 'גן ירק'], c: 0, e: 'בבית אחד יש דירה פנויה, וכל מי שבא לראות אותה נתקל בסירוב של השכנים.' },
+      { q: 'איזה מבין אלה מגיע לראות את הדירה?', a: ['נמלה', 'פיל', 'דב', 'נמר'], c: 0, e: 'בסיפור מגיעים נמלה, ארנבת, חזיר וזמיר שכולם מחפשים בית.' },
+      { q: 'למה השכנים מסרבים למי שבא?', a: ['בגלל דעות קדומות עליו', 'כי הדירה יקרה להם מדי', 'כי אין להם גינה', 'כי הוא מאחר'], c: 0, e: 'כל שכן פוסל את הבא בתור רק מפני שהוא אחר, לא בגלל משהו אמיתי.' },
+      { q: 'מה המסר המרכזי של הספר?', a: ['קבלת האחר וסובלנות', 'חשיבות הכסף', 'עדיף לגור לבד', 'אסור לשכור דירה'], c: 0, e: 'הספר נבחר לספר הילדים העברי האהוב בכל הזמנים, והמסר שלו הוא לקבל את מי ששונה.' },
+      { q: 'מי כתבה את "דירה להשכיר"?', a: ['לאה גולדברג', 'מרים רות', 'דויד גרוסמן', 'מאיר שלו'], c: 0, e: 'לאה גולדברג כתבה גם את "איה פלוטו" ו"המפוזר מכפר אז"ר".' },
+    ],
+  },
+  {
+    id: 'nechama', title: 'הכינה נחמה', author: 'מאיר שלו', emoji: '🐜', hue: 96,
+    questions: [
+      { q: 'מהי נחמה?', a: ['כינה קטנה', 'פרפר', 'דבורה', 'נמלה'], c: 0, e: 'נחמה היא כינה זעירה עם חלומות גדולים.' },
+      { q: 'מאיפה נחמה יוצאת?', a: ['מביצה קטנה על ראש של ילד', 'מגינה נסתרת', 'ממערה בהר', 'מבטן של דג'], c: 0, e: 'על ראשו של ילד קטן יש ביצה קטנה, וממנה יוצאת נחמה למסע.' },
+      { q: 'מי כתב את הספר?', a: ['מאיר שלו', 'לאה גולדברג', 'דויד גרוסמן', 'רואלד דאל'], c: 0, e: 'מאיר שלו כתב גם את "גומות החן של זוהר" ו"אבא עושה בושות".' },
+      { q: 'נחמה יוצאת למסעות והרפתקאות.', a: ['נכון', 'לא נכון'], c: 0, e: 'נכון, ועוברת הרפתקאות מצחיקות שבגללן הספר כל כך אהוב.' },
+      { q: 'מה מיוחד בגיבור או בגיבורה של הספר?', a: ['שהיא קטנה מאוד אבל אמיצה', 'שהיא גבוהה מכולם', 'שהיא לא יודעת לדבר', 'שהיא גרה בארמון'], c: 0, e: 'הספר מראה שגם הקטן ביותר יכול לצאת למסע גדול.' },
+    ],
+  },
+  {
+    id: 'zohar', title: 'גומות החן של זוהר', author: 'מאיר שלו', emoji: '😊', hue: 340,
+    questions: [
+      { q: 'מה זוהר כל כך רוצה?', a: ['גומות חן', 'תלתלים', 'משקפיים', 'כלבלב'], c: 0, e: 'זוהר מנסה בכל דרך אפשרית להשיג גומות חן בלחיים.' },
+      { q: 'מה שמה של הילדה?', a: ['זוהר', 'נחמה', 'רותי', 'סיגלית'], c: 0, e: 'זוהר, וזה גם שם הספר.' },
+      { q: 'בת כמה זוהר?', a: ['ארבע וחצי', 'שש', 'שמונה', 'עשר'], c: 0, e: 'זוהר היא ילדה גדולה, בת ארבע וחצי מירושלים.' },
+      { q: 'באיזו עיר גרה זוהר?', a: ['ירושלים', 'תל אביב', 'חיפה', 'באר שבע'], c: 0, e: 'בירושלים.' },
+      { q: 'מי כתב את הסיפור?', a: ['מאיר שלו', 'לאה גולדברג', 'מיריק שניר', 'ט. כרמי'], c: 0, e: 'מאיר שלו, שכתב גם את "הכינה נחמה" ו"אבא עושה בושות".' },
+    ],
+  },
+  {
+    id: 'aba-bushot', title: 'אבא עושה בושות', author: 'מאיר שלו', emoji: '🙈', hue: 210,
+    questions: [
+      { q: 'איך קוראים לילד הגיבור?', a: ['אפרים', 'איתמר', 'אלון', 'אורי'], c: 0, e: 'הילד הוא אפרים, ויש לו אבא שאוהב להמציא סיפורים.' },
+      { q: 'במה עובדת אמא של אפרים?', a: ['כתבת חדשות', 'מורה', 'רופאה', 'טבחית'], c: 0, e: 'אמא היא כתבת חדשות, ואפרים חושב שהיא משהו מיוחד.' },
+      { q: 'אבא של אפרים מרבה להמציא סיפורים ולעשות בושות.', a: ['נכון', 'לא נכון'], c: 0, e: 'נכון, ולכן אפרים מתבייש בו לפעמים.' },
+      { q: 'מה הספר מלמד בסוף?', a: ['לקבל את האדם כמו שהוא', 'שכדאי תמיד לשתוק', 'שאסור להמציא סיפורים בכלל', 'שאמא תמיד צודקת'], c: 0, e: 'הספר עוסק בשונות ובמיוחדות, ובגאווה אמיתית במקום בבושה.' },
+      { q: 'מי כתב את הספר?', a: ['מאיר שלו', 'דויד גרוסמן', 'רואלד דאל', 'לאה גולדברג'], c: 0, e: 'מאיר שלו, שכתב גם את "גומות החן של זוהר" ו"הכינה נחמה".' },
+    ],
+  },
+  {
+    id: 'balonim', title: 'מעשה בחמישה בלונים', author: 'מרים רות', emoji: '🎈', hue: 190,
+    questions: [
+      { q: 'כמה בלונים מחלקים בספר?', a: ['חמישה', 'שלושה', 'שישה', 'עשרה'], c: 0, e: 'אמא של רותי מחלקת חמישה בלונים, אחד לכל ילד.' },
+      { q: 'מה קורה לבלונים בסיפור?', a: ['הם מתפוצצים אחד אחרי השני', 'הם עפים לים', 'הם נמסים בגשם', 'הם משנים צבע'], c: 0, e: 'בכל פעם מתפוצץ בלון אחר, ומנחמים את הילדים.' },
+      { q: 'איזה צבע הבלון של רותי?', a: ['כחול', 'אדום', 'ירוק', 'צהוב'], c: 0, e: 'כחול לרותי, צהוב לרון, סגול לסיגלית, ירוק לאורי ואדום לאלון.' },
+      { q: 'מה אומרים לילדים בכל פעם שמתפוצץ בלון?', a: ['"זה סופו של כל בלון"', '"קנו בלון חדש"', '"אסור לבכות"', '"הבלון ברח"'], c: 0, e: 'המשפט החוזר הזה הוא אחד הדברים שהכי זוכרים מהספר.' },
+      { q: 'מי כתבה את הספר?', a: ['מרים רות', 'לאה גולדברג', 'מיריק שניר', 'מאיר שלו'], c: 0, e: 'מרים רות, אחת הסופרות החשובות לקטנטנים בישראל.' },
+    ],
+  },
+  {
+    id: 'itamar', title: 'איתמר פוגש ארנב', author: 'דויד גרוסמן', emoji: '🐰', hue: 260,
+    questions: [
+      { q: 'את מי פוגש איתמר?', a: ['ארנב', 'דב', 'שועל', 'צב'], c: 0, e: 'המפגש בין השניים הוא לב הסיפור.' },
+      { q: 'מה מרגישים איתמר והארנב בהתחלה?', a: ['שניהם מפחדים זה מזה', 'שניהם שמחים מאוד', 'שניהם כועסים', 'שניהם עייפים'], c: 0, e: 'כל אחד חושש מהזר, וזה בדיוק מה שמקרב ביניהם.' },
+      { q: 'מה נוצר בין איתמר לארנב?', a: ['ידידות אמיצה', 'מריבה גדולה', 'תחרות ספורט', 'שיעור חשבון'], c: 0, e: 'ידידות שנרקמת כשמפסיקים לפחד מהשונה.' },
+      { q: 'מי כתב את הספר?', a: ['דויד גרוסמן', 'מאיר שלו', 'לאה גולדברג', 'מרים רות'], c: 0, e: 'דויד גרוסמן, והספר הומחז לאופרה לילדים עם מוזיקה של יוני רכטר.' },
+      { q: 'מה המסר של הסיפור?', a: ['לא לפחד מהשונה ולקבל את האחר', 'שארנבים הם הכי מהירים', 'שכדאי תמיד לשחק לבד', 'שאסור לצאת מהבית'], c: 0, e: 'המסר הוא דו-קיום ופתיחות לפגוש את מי ששונה ממך.' },
+    ],
+  },
+  {
+    id: 'tiras', title: 'תירס חם', author: 'מיריק שניר', emoji: '🌽', hue: 52,
+    questions: [
+      { q: 'מי הגיבור של הסיפור?', a: ['אופיר', 'יהב', 'לירון', 'דני'], c: 0, e: 'אופיר, שאוהב לנגן ולשיר, וביום קיץ חם אוהב גם תירס חם.' },
+      { q: 'מה אופיר קורא בדרך?', a: ['"תירס חם!"', '"גלידה קרה!"', '"אבטיח מתוק!"', '"מרק חם!"'], c: 0, e: 'הקריאה "תירס חם! תירס חם!" היא השיר שמלווה את כל המסע.' },
+      { q: 'מה עושים החברים שמצטרפים לאופיר?', a: ['כל אחד מביא כלי ומנגן', 'כל אחד מביא אוכל אחר', 'כולם שקטים', 'כולם חוזרים הביתה'], c: 0, e: 'כל חבר מצטרף עם כלי משלו, וכולם שרים יחד.' },
+      { q: 'מי כתבה את "תירס חם"?', a: ['מיריק שניר', 'מרים רות', 'לאה גולדברג', 'דויד גרוסמן'], c: 0, e: 'מיריק שניר, שכותבת בעיקר לגיל הרך.' },
+      { q: 'באיזו עונה מתרחש הסיפור?', a: ['בקיץ', 'בחורף', 'בסתיו', 'באביב'], c: 0, e: 'ביום קיץ חם, ולכן כולם רוצים תירס חם בדרך לים.' },
+    ],
+  },
+  {
+    id: 'shmulikipod', title: 'שמוליקיפוד', author: 'ט. כרמי ושושנה היימן', emoji: '🦔', hue: 20,
+    questions: [
+      { q: 'איזו חיה היא גיבור הספר?', a: ['קיפוד', 'ארנב', 'דב', 'ציפור'], c: 0, e: 'קיפוד, ומכאן השם שמוליקיפוד.' },
+      { q: 'איך קוראים לו?', a: ['שמוליק', 'שמעון', 'שוקי', 'שחר'], c: 0, e: 'שמוליק, ועם המילה קיפוד נוצר השם המפורסם.' },
+      { q: 'מה מגן על הקיפוד?', a: ['הקוצים שעל גבו', 'הזנב הארוך', 'הכנפיים', 'הפרווה הרכה'], c: 0, e: 'כשהוא מתכדרר הקוצים הופכים לשריון.' },
+      { q: 'השם "שמוליקיפוד" הוא חיבור של "שמוליק" עם "קיפוד".', a: ['נכון', 'לא נכון'], c: 0, e: 'נכון, ומכאן גם שם ההצגה והגן שנקראו על שמו.' },
+      { q: 'מי כתבו את הספר?', a: ['ט. כרמי ושושנה היימן', 'לאה גולדברג ומרים רות', 'מאיר שלו', 'דויד גרוסמן'], c: 0, e: 'ט. כרמי ושושנה היימן, והספר הפך לקלאסיקה של ילדי ישראל.' },
+    ],
+  },
+  {
+    id: 'pooh', title: 'פו הדב', author: 'א"א מילן', emoji: '🐻', hue: 38,
+    questions: [
+      { q: 'מהו פו הדב?', a: ['דוב שאוהב דבש', 'ארנב שאוהב גזר', 'חזירון שאוהב בוץ', 'ינשוף חכם'], c: 0, e: 'פו הוא דוב קטן וטוב לב שהדבש הוא הדבר האהוב עליו.' },
+      { q: 'מי החבר הקטן והביישן של פו?', a: ['פיגלט החזרזיר', 'טיגר', 'ינשוף', 'קנגה'], c: 0, e: 'פיגלט, החזרזיר הקטן, הוא החבר הקרוב ביותר של פו.' },
+      { q: 'איפה גרים פו וחבריו?', a: ['ביער ת"ק העצים', 'על חוף הים', 'במדבר', 'בכרך גדול'], c: 0, e: 'השם העברי "ת"ק העצים" הוא תרגום של יער מאה העצים.' },
+      { q: 'איה החמור הוא בדרך כלל שמח ומלא אנרגיה.', a: ['נכון', 'לא נכון'], c: 1, e: 'לא נכון. איה הוא בדרך כלל קודר ועצוב, וזה מה שמצחיק בו.' },
+      { q: 'מי כתב את "פו הדב"?', a: ['אלן אלכסנדר מילן', 'לואיס קרול', 'רודיארד קיפלינג', 'רואלד דאל'], c: 0, e: 'א"א מילן כתב את הספר בהשראת צעצועי הדוב של בנו.' },
+    ],
+  },
+  {
+    id: 'alice', title: 'אליס בארץ הפלאות', author: 'לואיס קרול', emoji: '🐇', hue: 320,
+    questions: [
+      { q: 'איך אליס מגיעה לארץ הפלאות?', a: ['היא נופלת למחילה של ארנב', 'היא שטה בסירה', 'היא עולה במעלית', 'היא נרדמת בגן'], c: 0, e: 'הכל מתחיל בארנב לבן ממהר, ואליס נכנסת אחריו למחילה.' },
+      { q: 'מה הארנב הלבן מחזיק כשהוא ממהר?', a: ['שעון', 'מטרייה', 'כובע', 'ספר'], c: 0, e: 'ארנב עם שעון הוא אחת התמונות המפורסמות בספרות.' },
+      { q: 'מה מיוחד בחתול מצ\'ייר?', a: ['הוא נעלם ומשאיר אחריו חיוך', 'הוא מדבר רק בצרפתית', 'הוא ישן כל היום', 'הוא נובח'], c: 0, e: 'החיוך של החתול נשאר באוויר גם אחרי שהחתול עצמו נעלם.' },
+      { q: 'מה משנה את גודלה של אליס?', a: ['עוגייה ומשקה', 'כובע קסמים', 'נעליים אדומות', 'שיר של ציפור'], c: 0, e: 'עוגייה עם "אכול אותי" ומשקה עם "שתה אותי" מגדילים ומקטינים אותה.' },
+      { q: 'מי כתב את הספר?', a: ['לואיס קרול', 'ג\'יימס בארי', 'פרנק באום', 'סנט-אכזופרי'], c: 0, e: 'לואיס קרול, מתמטיקאי וסופר אנגלי.' },
+    ],
+  },
+  {
+    id: 'oz', title: 'הקוסם מארץ עוץ', author: 'ל. פרנק באום', emoji: '🌪️', hue: 150,
+    questions: [
+      { q: 'מה שם הילדה הגיבורה?', a: ['דורותי', 'אליס', 'וונדי', 'מטילדה'], c: 0, e: 'דורותי, שנסחפת עם ביתה בטורנדו אל ארץ עוץ.' },
+      { q: 'מה שם הכלב של דורותי?', a: ['טוטו', 'פלוטו', 'רקס', 'בובי'], c: 0, e: 'טוטו הקטן נמצא איתה בכל המסע.' },
+      { q: 'את מי פוגשת דורותי בדרך?', a: ['דחליל, איש הפח והאריה', 'שלושה חזירים', 'שני נוכלים', 'קיפוד וארנב'], c: 0, e: 'שלושת החברים מצטרפים אליה בדרך אל הקוסם.' },
+      { q: 'מה רוצה כל אחד מהקוסם?', a: ['מוח, לב ואומץ', 'כסף, בית וזהב', 'כובע, מעיל ונעליים', 'מפה, סוס ומזוודה'], c: 0, e: 'הדחליל רוצה מוח, איש הפח רוצה לב, והאריה רוצה אומץ.' },
+      { q: 'לאן דורותי רוצה לחזור?', a: ['הביתה לקנזס', 'לארץ עוץ', 'לבית הספר', 'לעיר הגדולה'], c: 1, e: 'היא רוצה לחזור הביתה לקנזס, וזה מה שמניע את כל המסע.' },
+    ],
+  },
+  {
+    id: 'pinocchio', title: 'פינוקיו', author: 'קרלו קולודי', emoji: '🪵', hue: 30,
+    questions: [
+      { q: 'ממה עשוי פינוקיו?', a: ['מעץ', 'משלג', 'מברזל', 'מבד'], c: 0, e: 'הוא בובה מעץ שנחצבה על ידי ג\'פטו הנגר.' },
+      { q: 'מי יצר את פינוקיו?', a: ['ג\'פטו הנגר', 'הפיה הכחולה', 'השועל', 'המנהל'], c: 0, e: 'ג\'פטו הוא אביו, והפיה הכחולה היא זו שנותנת לו חיים.' },
+      { q: 'מה קורה לאף של פינוקיו כשהוא משקר?', a: ['הוא מתארך', 'הוא מתקצר', 'הוא נושר', 'הוא הופך לכחול'], c: 0, e: 'האף הגדל הוא הסימן המפורסם ביותר לשקר.' },
+      { q: 'בסוף הסיפור פינוקיו הופך לילד אמיתי.', a: ['נכון', 'לא נכון'], c: 0, e: 'נכון, אחרי שהוא למד להיות אמיץ ואחראי.' },
+      { q: 'מי כתב את "פינוקיו"?', a: ['קרלו קולודי', 'האחים גרים', 'לואיס קרול', 'רודיארד קיפלינג'], c: 0, e: 'הסופר האיטלקי קרלו קולודי.' },
+    ],
+  },
+  {
+    id: 'peterpan', title: 'פיטר פן', author: 'ג\'יימס בארי', emoji: '🧚', hue: 200,
+    questions: [
+      { q: 'איפה גר פיטר פן?', a: ['בארץ לעולם לא', 'ביער ת"ק העצים', 'במדבר', 'באי בודד'], c: 0, e: 'בארץ לעולם לא, שם הילדים לא גדלים אף פעם.' },
+      { q: 'מה שמה של הילדה שמצטרפת אליו?', a: ['וונדי', 'אליס', 'דורותי', 'סינדרלה'], c: 0, e: 'וונדי מוזמנת יחד עם אחיה הקטנים.' },
+      { q: 'מי היריב של פיטר פן?', a: ['קפטן הוק', 'הזאב', 'שירחאן', 'המכשפה'], c: 0, e: 'קפטן הוק, הפיראט עם וו במקום יד.' },
+      { q: 'איך הילדים מצליחים לעוף?', a: ['בזכות אבק פיות ומחשבות טובות', 'בזכות כנפיים', 'בזכות מטאטא', 'הם לא עפים'], c: 0, e: 'אבק פיות, וגם קצת אמונה ומחשבות טובות.' },
+      { q: 'איך קוראים לפיה הקטנה של פיטר פן?', a: ['טינקרבל', 'נחמה', 'פיה כחולה', 'נטשה'], c: 0, e: 'טינקרבל, הפיה הקטנה והקנאית.' },
+    ],
+  },
+  {
+    id: 'charlie', title: 'צ\'רלי והשוקולדה', author: 'רואלד דאל', emoji: '🍫', hue: 18,
+    questions: [
+      { q: 'מה שם הילד הגיבור?', a: ['צ\'רלי באקט', 'ג\'יימס', 'מטילדה', 'וילי'], c: 0, e: 'צ\'רלי באקט, ילד עני שמקבל כרטיס זהב אחד.' },
+      { q: 'מה מוצא צ\'רלי בכרטיס הזהב?', a: ['הזמנה לביקור במפעל השוקולד', 'כסף רב', 'מכונית', 'מפה של עיר'], c: 0, e: 'חמישה כרטיסי זהב מוסתרים בחפיסות, והם הזמנה למפעל.' },
+      { q: 'מי בעל מפעל השוקולד?', a: ['וילי וונקה', 'מר באקט', 'ג\'פטו', 'קפטן הוק'], c: 0, e: 'וילי וונקה, הקונדיטור המוזר והגאון.' },
+      { q: 'מה קורה לילדים האחרים במפעל?', a: ['הם מסתבכים בגלל חוסר המשמעת שלהם', 'הם מקבלים מכוניות', 'הם הופכים לשוקולד', 'הם הולכים הביתה מיד'], c: 0, e: 'כל ילד מפונק מסתבך באחת המכונות, ורק צ\'רלי נשאר.' },
+      { q: 'מי כתב את הספר?', a: ['רואלד דאל', 'א"א מילן', 'לואיס קרול', 'קרלו קולודי'], c: 0, e: 'רואלד דאל, שכתב גם את "מטילדה".' },
+    ],
+  },
+  {
+    id: 'matilda', title: 'מטילדה', author: 'רואלד דאל', emoji: '📚', hue: 300,
+    questions: [
+      { q: 'מה הכוח המיוחד של מטילדה?', a: ['היא מזיזה חפצים במחשבה', 'היא טסה', 'היא מדברת עם חיות', 'היא נעלמת'], c: 0, e: 'בהמשך הספר מתגלה שהיא יכולה להזיז חפצים בכוח המחשבה.' },
+      { q: 'מה מטילדה ממש אוהבת?', a: ['לקרוא ספרים', 'לשחק כדורגל', 'לצייר', 'לשיר'], c: 0, e: 'היא קוראת ספרים שלמים עוד לפני שהתחילה ללמוד.' },
+      { q: 'מי המנהלת המפחידה בבית הספר?', a: ['המיס טרנצ\'בול', 'המיס האני', 'המיס נחמה', 'המיס גולדברג'], c: 0, e: 'המיס טרנצ\'בול, שמטילה ילדים באוויר.' },
+      { q: 'מי המורה הטובה שמבינה את מטילדה?', a: ['מיס האני', 'מיס נחמה', 'המיס טרנצ\'בול', 'המורה לספורט'], c: 0, e: 'מיס האני היא היחידה שמזהה כמה מטילדה מוכשרת.' },
+      { q: 'הוריה של מטילדה מעריכים מאוד את הקריאה שלה.', a: ['נכון', 'לא נכון'], c: 1, e: 'לא נכון. דווקא להורים שלה זה מפריע, והיא מוצאת בית חם אצל מיס האני.' },
+    ],
+  },
+  {
+    id: 'jungle', title: 'ספר הג\'ונגל', author: 'רודיארד קיפלינג', emoji: '🐯', hue: 110,
+    questions: [
+      { q: 'מה שם הילד שגדל בג\'ונגל?', a: ['מוגלי', 'באלו', 'קא', 'שירחאן'], c: 0, e: 'מוגלי נמצא בג\'ונגל בילדותו ומגודל בידי זאבים.' },
+      { q: 'מי הדב שמלמד אותו את חוקי הג\'ונגל?', a: ['באלו', 'שירחאן', 'קא', 'הפיל'], c: 0, e: 'באלו הדב מלמד את מוגלי את חוקי היער.' },
+      { q: 'מי הטיגריס שמאיים על מוגלי?', a: ['שירחאן', 'באלו', 'קא', 'טיגר'], c: 0, e: 'שירחאן, הטיגריס שמאיים להרוג את מוגלי.' },
+      { q: 'מיהם הוריו המאמצים של מוגלי?', a: ['זאבים', 'קופים', 'דובים', 'פילים'], c: 0, e: 'זוג זאבים מגלה אותו ומגדל אותו להקה.' },
+      { q: 'מי הנחש הגדול בסיפור?', a: ['קא', 'שירחאן', 'טוטו', 'פו'], c: 0, e: 'קא הוא פייתון גדול, שלפעמים עוזר ולפעמים מסכן.' },
+    ],
+  },
+  {
+    id: 'prince', title: 'הנסיך הקטן', author: 'אנטואן דה סנט-אכזופרי', emoji: '⭐', hue: 232,
+    questions: [
+      { q: 'מה הנסיך הקטן מבקש מהמספר שיצייר לו?', a: ['כבשה', 'פיל', 'נחש', 'ורד'], c: 0, e: 'הוא מבקש כבשה, ולא מרוצה מאף ציור עד שמציירים לו ארגז.' },
+      { q: 'איזה פרח מטפח הנסיך הקטן בכוכב שלו?', a: ['ורד', 'חמנייה', 'נרקיס', 'צבעוני'], c: 0, e: 'ורד אחד, יהיר ורגיש, שלומדים לאהוב.' },
+      { q: 'איזו חיה מלמדת את הנסיך על חברות?', a: ['שועל', 'נחש', 'כבשה', 'אריה'], c: 0, e: 'השועל מלמד אותו מה זה לאלף, כלומר לקשור קשר אמיתי.' },
+      { q: 'היכן נפגש המספר עם הנסיך הקטן?', a: ['במדבר סהרה', 'ביער גשם', 'על חוף הים', 'בעיר פריז'], c: 0, e: 'הטייס נחת נחיתת אונס במדבר, ושם פגש אותו.' },
+      { q: 'מי כתב את "הנסיך הקטן"?', a: ['אנטואן דה סנט-אכזופרי', 'ז\'ול ורן', 'ויקטור הוגו', 'לואיס קרול'], c: 0, e: 'סנט-אכזופרי, שהיה גם טייס בעצמו.' },
+    ],
+  },
+  {
+    id: 'lion-mouse', title: 'האריה והעכבר', author: 'משל אזופ', emoji: '🦁', hue: 42,
+    questions: [
+      { q: 'מיהם שני הגיבורים?', a: ['אריה ועכבר', 'שועל וארנב', 'זאב וגדי', 'דב ודבורה'], c: 0, e: 'זהו משל מפורסם על שניים שמאוד שונים בגודל.' },
+      { q: 'מה קורה לעכבר בהתחלה?', a: ['האריה תופס אותו ומשחרר אותו', 'הוא בורח מהבית', 'הוא מאבד את הזנב', 'הוא מוצא אוצר'], c: 0, e: 'העכבר מבטיח לעזור לו אם ישחרר אותו, והאריה צוחק אבל משחרר.' },
+      { q: 'איך העכבר משלם לאריה בחזרה?', a: ['הוא מכרסם את הרשת ומשחרר אותו', 'הוא מביא לו אוכל', 'הוא קורא לעזרה', 'הוא נלחם בשועל'], c: 0, e: 'האריה נלכד ברשת ציד, והעכבר מוכיח שגם קטן יכול להציל גדול.' },
+      { q: 'מה המסר של המשל?', a: ['גם הקטן יכול לעזור לגדול', 'החזק תמיד מנצח', 'אסור לבטוח באף אחד', 'עכברים חלשים'], c: 0, e: 'זה הרעיון המרכזי: אין לזלזל באף אחד.' },
+      { q: 'מי כותב המשלים שהמשל הזה מיוחס לו?', a: ['אזופ', 'האחים גרים', 'אנדרסן', 'לה-פונטן ורק הוא'], c: 0, e: 'המשל מיוחס לאזופ, מספר המשלים היווני הקדום.' },
+    ],
+  },
+  {
+    id: 'redhood', title: 'כיפה אדומה', author: 'מעשייה קלאסית', emoji: '🧺', hue: 0,
+    questions: [
+      { q: 'מדוע קוראים לה כיפה אדומה?', a: ['היא לובשת כיפה אדומה שסבתא תפרה לה', 'היא אוהבת עגבניות', 'יש לה שיער אדום בלבד', 'היא גרה בבית אדום'], c: 0, e: 'הכיפה האדומה מסבתא היא מה שנתן לה את השם.' },
+      { q: 'למי היא הולכת ביער?', a: ['לסבתא', 'למורה', 'לחבר של אבא', 'לדודה'], c: 0, e: 'היא הולכת לבקר את סבתא, שלפי הסיפור הייתה חולה.' },
+      { q: 'מי מנסה להטעות אותה בדרך?', a: ['הזאב', 'השועל', 'המכשפה', 'הדרקון'], c: 0, e: 'הזאב מגיע לסבתא ראשון ומתחזה לה.' },
+      { q: 'מה שואלת כיפה אדומה כשהיא רואה את "סבתא" במיטה?', a: ['"סבתא, למה אוזניים גדולות לך?"', '"סבתא, איפה המשקפיים?"', '"סבתא, מה לארוחת ערב?"', '"סבתא, מי אתה?"'], c: 0, e: 'השאלות המפורסמות על האוזניים, העיניים והשיניים.' },
+      { q: 'מי מציל בסוף את כיפה אדומה ואת סבתא?', a: ['צייד', 'רופא', 'אבא שלה', 'הזאב עצמו'], c: 0, e: 'הצייד מגיע, מתגבר על הזאב ומחלץ אותן.' },
+    ],
+  },
+  {
+    id: 'piglets', title: 'שלושת החזירים הקטנים', author: 'מעשייה קלאסית', emoji: '🐷', hue: 330,
+    questions: [
+      { q: 'כמה חזירים יש בסיפור?', a: ['שלושה', 'שניים', 'ארבעה', 'חמישה'], c: 0, e: 'שלושה אחים חזירים בונים להם בית.' },
+      { q: 'ממה בנה החזיר השלישי את ביתו?', a: ['מלבנים', 'מקש', 'מענפים', 'מעלים'], c: 0, e: 'הלבנים חזקות, והבית שלו הוא היחיד שמחזיק מעמד.' },
+      { q: 'מי מנסה להפיל את הבתים?', a: ['הזאב', 'השועל', 'הדב', 'הרוח בלבד'], c: 0, e: 'הזאב נושף ונושף, ומפיל את בית הקש ואת בית העץ.' },
+      { q: 'מה קורה לבית הבנוי מלבנים?', a: ['הוא לא נופל', 'הוא נעלם', 'הוא נשרף', 'הוא עף ברוח'], c: 0, e: 'הזאב מתאמץ אבל הבית מלבנים לא זז.' },
+      { q: 'מה לומדים מהסיפור?', a: ['עבודה יסודית ומאמץ משתלמים', 'שכדאי תמיד למהר', 'שבתים קטנים טובים', 'שאסור לבנות בבית'], c: 0, e: 'החזיר שהשקיע בעבודה נשאר עם בית בטוח.' },
+    ],
+  },
+  {
+    id: 'hansel', title: 'עמי ותמי', author: 'האחים גרים', emoji: '🍬', hue: 348,
+    questions: [
+      { q: 'מי הם עמי ותמי?', a: ['אח ואחות', 'שני אחים תאומים', 'אבא ואמא', 'שני חברים'], c: 0, e: 'עמי הוא האח, ותמי היא האחות.' },
+      { q: 'ממה עשוי הבית שמצאו ביער?', a: ['ממתקים ועוגות', 'מעץ', 'מלבנים', 'מקש'], c: 0, e: 'גג של שוקולד, חלונות של סוכר, וכל מי שמתקרב מתפתה.' },
+      { q: 'מי גרה בבית הממתקים?', a: ['מכשפה', 'פיה', 'זקן נחמד', 'קיפוד'], c: 0, e: 'מכשפה שמנסה לתפוס את הילדים.' },
+      { q: 'איך מצליחים הילדים להימלט?', a: ['תמי דוחפת את המכשפה לתנור', 'הם בורחים בלילה', 'המכשפה מרחמת עליהם', 'מגיע שוטר'], c: 0, e: 'תמי משתמשת בתנור של המכשפה עצמה ומשחררת את עמי.' },
+      { q: 'מי כתבו את הסיפור?', a: ['האחים גרים', 'אנדרסן', 'אזופ', 'לואיס קרול'], c: 0, e: 'יעקב וילהלם גרים, שאספו מעשיות עם רבות.' },
+    ],
+  },
+  {
+    id: 'emperor', title: 'הבגדים החדשים של הקיסר', author: 'הנס כריסטיאן אנדרסן', emoji: '👑', hue: 48,
+    questions: [
+      { q: 'מה מיוחד בבגדים החדשים?', a: ['רק טיפשים לא רואים אותם', 'הם עשויים זהב', 'הם זוהרים בחושך', 'הם עשויים מנוצות'], c: 0, e: 'זה השקר של שני הרמאים, וכל המבוגרים מעמידים פנים שהם רואים.' },
+      { q: 'מי תופר את הבגדים?', a: ['שני רמאים שמעמידים פנים', 'החייט של הארמון', 'המלכה', 'שתי תופרות אמיתיות'], c: 0, e: 'שני נוכלים שמבטיחים בגד קסום ולוקחים זהב ומשי.' },
+      { q: 'מי אומר את האמת?', a: ['ילד קטן', 'הקיסר', 'השר', 'החייל'], c: 0, e: 'ילד קורא בקול: "המלך הוא עירום!" ופוצח את השתיקה של כולם.' },
+      { q: 'הקיסר יוצא בסוף לתהלוכה בלי בגדים.', a: ['נכון', 'לא נכון'], c: 0, e: 'נכון, והוא בטוח שהוא לבוש בבגד המפואר ביותר.' },
+      { q: 'מי כתב את הסיפור?', a: ['הנס כריסטיאן אנדרסן', 'האחים גרים', 'אזופ', 'רודיארד קיפלינג'], c: 0, e: 'אנדרסן הדני, שכתב גם את "בת הים הקטנה".' },
+    ],
+  },
+  {
+    id: 'cinderella', title: 'סינדרלה', author: 'מעשייה קלאסית', emoji: '👠', hue: 285,
+    questions: [
+      { q: 'מה סינדרלה מאבדת בדרך הביתה מהנשף?', a: ['נעל זכוכית', 'מטפחת', 'טבעת', 'כובע'], c: 0, e: 'הנעל הקטנה שנשארת על המדרגות היא הרמז שמאתר אותה.' },
+      { q: 'מי עוזרת לסינדרלה ללכת לנשף?', a: ['הפיה הטובה', 'אמא שלה', 'שכנה', 'המכשפה'], c: 0, e: 'הפיה הופכת דלעת לכרכרה ונותנת לה שמלה ונעליים.' },
+      { q: 'לאן סינדרלה הולכת?', a: ['לנשף בארמון', 'לשוק', 'לבית הספר', 'לטיול ביער'], c: 0, e: 'הנסיך עורך נשף גדול בארמון.' },
+      { q: 'האחיות החורגות של סינדרלה מתנהגות אליה בטוב.', a: ['נכון', 'לא נכון'], c: 1, e: 'לא נכון. היא והאם החורגת מכריחות את סינדרלה לנקות, לבשל ולשרת את כולן.' },
+      { q: 'איך הנסיך מוצא את סינדרלה?', a: ['הוא מחפש את בעלת הנעל', 'היא כותבת לו מכתב', 'הוא זוכר את שמה', 'הפיה מספרת לו'], c: 0, e: 'הוא מנסה את הנעל על כל נערה בממלכה עד שהיא מתאימה בדיוק.' },
+    ],
+  },
+];
+
+// תוספות לספריית המשחקונים: 20 כיתות, חלוקה לפי שכבות, ו-3 שאלות נוספות לכל ספר
+// (8 שאלות לספר, 200 בסך הכל). d = רמת קושי: 1 קל, 2 בינוני, 3 מאתגר.
+
+var CLASSES = [
+  { id: 'a1', label: "א'1", grade: 1 }, { id: 'a2', label: "א'2", grade: 1 },
+  { id: 'a3', label: "א'3", grade: 1 }, { id: 'a4', label: "א'4", grade: 1 },
+  { id: 'b1', label: "ב'1", grade: 2 }, { id: 'b2', label: "ב'2", grade: 2 }, { id: 'b3', label: "ב'3", grade: 2 },
+  { id: 'c1', label: "ג'1", grade: 3 }, { id: 'c2', label: "ג'2", grade: 3 }, { id: 'c3', label: "ג'3", grade: 3 },
+  { id: 'd1', label: "ד'1", grade: 4 }, { id: 'd2', label: "ד'2", grade: 4 }, { id: 'd3', label: "ד'3", grade: 4 },
+  { id: 'e1', label: "ה'1", grade: 5 }, { id: 'e2', label: "ה'2", grade: 5 }, { id: 'e3', label: "ה'3", grade: 5 },
+  { id: 'f1', label: "ו'1", grade: 6 }, { id: 'f2', label: "ו'2", grade: 6 },
+  { id: 'f3', label: "ו'3", grade: 6 }, { id: 'f4', label: "ו'4", grade: 6 },
+];
+
+var GRADE_GROUPS = [
+  { label: 'כיתה א', grade: 1 }, { label: 'כיתה ב', grade: 2 }, { label: 'כיתה ג', grade: 3 },
+  { label: 'כיתה ד', grade: 4 }, { label: 'כיתה ה', grade: 5 }, { label: 'כיתה ו', grade: 6 },
+];
+
+// כמה שאלות בכל משחקון לפי שכבת הגיל
+var GRADE_PLAN = { 1: 5, 2: 5, 3: 6, 4: 6, 5: 8, 6: 8 };
+
+// רמת הקושי של 5 השאלות המקוריות בכל ספר (לפי הסדר)
+var BASE_DIFFICULTY = [1, 1, 1, 2, 2];
+
+var EXTRA_QUESTIONS = {
+  pluto: [
+    { q: 'מי דואגת לפלוטו ומחכה לו בבית?', a: ['אמא שלו', 'החתול השכן', 'התרנגול', 'הירח'], c: 0, e: 'בסוף המסע פלוטו חוזר הביתה אל אמא שלו.', d: 2 },
+    { q: 'מה פלוטו עושה לאורך הסיפור?', a: ['מטייל ופוגש בעלי חיים', 'ישן כל היום', 'לומד לקרוא', 'מנגן בכינור'], c: 0, e: 'הכלבלב יוצא לטיול ופוגש חיות שונות בדרך.', d: 2 },
+    { q: 'הספר "איה פלוטו" מלווה ילדים בישראל כבר עשורים רבים.', a: ['נכון', 'לא נכון'], c: 0, e: 'זה אחד מספרי הילדים הוותיקים והאהובים כאן.', d: 3 },
+  ],
+  mevuzar: [
+    { q: 'מה הבעיה הגדולה של המפוזר?', a: ['הוא שוכח איפה שם את החפצים', 'אין לו בית', 'הוא לא יודע לקרוא', 'הוא מפחד מחושך'], c: 0, e: 'הפיזור שלו הוא מקור כל הצרות וגם כל הצחוק.', d: 2 },
+    { q: 'מהו "כפר אז\\"ר"?', a: ['כפר דמיוני בסיפור', 'עיר גדולה ברוסיה', 'שכונה בירושלים', 'הר בגליל'], c: 0, e: 'השם הוא המצאה מצחיקה ומחורזת של הסופרת.', d: 2 },
+    { q: 'מהי ההחלטה הגדולה של המפוזר?', a: ['לשנות מקום ולעבור למקום אחר', 'לקנות בית', 'להפסיק לעבוד', 'למצוא עבודה חדשה'], c: 0, e: 'המעבר הוא נקודת המפנה בסיפור.', d: 3 },
+  ],
+  dira: [
+    { q: 'מה עושים השכנים כשמגיע מועמד חדש לדירה?', a: ['פוסלים אותו עוד לפני שהכירו אותו', 'עורכים לו מסיבה', 'מבקשים ממנו כסף', 'מתחבאים ממנו'], c: 0, e: 'כל שכן פוסל את הבא בתור רק מפני שהוא שונה.', d: 2 },
+    { q: 'מה מבינים בסוף הסיפור?', a: ['שכל אחד יכול להיות שכן טוב', 'שכדאי לגור לבד', 'שהדירה קטנה מדי', 'שאסור להחזיק חיות'], c: 0, e: 'המסר הוא סובלנות וקבלת האחר.', d: 2 },
+    { q: 'בהצבעת קוראים ומאזינים הספר נבחר לספר הילדים העברי האהוב בכל הזמנים.', a: ['נכון', 'לא נכון'], c: 0, e: 'בהצבעה של תאגיד השידור הוא הגיע למקום הראשון.', d: 3 },
+  ],
+  nechama: [
+    { q: 'מה אופייה של נחמה?', a: ['סקרנית ואמיצה למרות גודלה', 'עצלה ופחדנית', 'רעבה כל הזמן', 'ישנונית'], c: 0, e: 'הקטנה מכולן היא דווקא ההרפתקנית.', d: 2 },
+    { q: 'מה הספר מלמד?', a: ['שגם הקטן יכול לעשות דברים גדולים', 'שכדאי להישאר בבית', 'שכינים הן מסוכנות', 'שצריך לסרוק את השיער'], c: 0, e: 'זו המסקנה מהמסע של נחמה.', d: 2 },
+    { q: 'מאיר שלו, מחבר הספר, כתב גם ספרים למבוגרים וגם לילדים.', a: ['נכון', 'לא נכון'], c: 0, e: 'הוא כתב רומנים מצליחים וגם ספרי ילדים אהובים.', d: 3 },
+  ],
+  zohar: [
+    { q: 'מה מפריע לזוהר בדמותה?', a: ['שאין לה גומות חן', 'שאין לה שיער', 'שהיא נמוכה', 'שאין לה חברים'], c: 0, e: 'היא חולמת על גומות חן ומנסה כל דרך להשיג אותן.', d: 2 },
+    { q: 'מה הספר מלמד?', a: ['לאהוב את עצמך כמו שאתה', 'שגומות חן הן הדבר החשוב ביותר', 'שכדאי להתאמץ להיות אחרת', 'שאסור לחלום'], c: 0, e: 'המסר החם של הספר הוא השלמה עם מי שאתה.', d: 2 },
+    { q: 'הספר נכתב בידי אותו מחבר של "אבא עושה בושות".', a: ['נכון', 'לא נכון'], c: 0, e: 'שניהם מאת מאיר שלו.', d: 3 },
+  ],
+  'aba-bushot': [
+    { q: 'מה אבא של אפרים נוהג לעשות?', a: ['להמציא סיפורים מופרכים', 'לשתוק כל היום', 'לקרוא עיתונים', 'לעבוד בגן'], c: 0, e: 'ההמצאות שלו משעשעות ומביכות בו זמנית.', d: 2 },
+    { q: 'איך מרגיש אפרים בסוף הסיפור?', a: ['גאה באבא שלו', 'עדיין מתבייש', 'כועס עליו', 'עצוב מאוד'], c: 0, e: 'בסוף הוא מבין שהאבא המיוחד שלו הוא דבר טוב.', d: 2 },
+    { q: 'הספר עוסק בשונות ובגאווה משפחתית.', a: ['נכון', 'לא נכון'], c: 0, e: 'המסר הוא קבלה וגאווה אמיתית, לא בושה.', d: 3 },
+  ],
+  balonim: [
+    { q: 'למי הובטח בלון אחר?', a: ['לאורי', 'לרותי', 'לרון', 'לסיגלית'], c: 0, e: 'לאורי הובטח בלון אחר, ולכן הוא מחכה בסבלנות.', d: 3 },
+    { q: 'מה לומדים הילדים בסוף הספר?', a: ['להיפרד מהבלון האחרון', 'לא לאהוב בלונים', 'לבכות חזק', 'לקנות עוד בלונים'], c: 0, e: 'בסוף הם מצליחים להיפרד גם מהבלון האדום.', d: 2 },
+    { q: 'מה צבע הבלון של אלון?', a: ['אדום', 'כחול', 'ירוק', 'צהוב'], c: 0, e: 'אדום לאלון, והוא הבלון האחרון שנשאר.', d: 2 },
+  ],
+  itamar: [
+    { q: 'למה איתמר והארנב מפחדים בהתחלה?', a: ['כי כל אחד מהם זר לשני', 'כי הם רעבים', 'כי יורד גשם', 'כי הם עייפים'], c: 0, e: 'הפחד מהזר הוא לב הסיפור.', d: 2 },
+    { q: 'מי כתב גם ספרים למבוגרים וגם את הסיפור הזה?', a: ['דויד גרוסמן', 'מאיר שלו', 'לאה גולדברג', 'מרים רות'], c: 0, e: 'גרוסמן הוא מהסופרים הבולטים בישראל.', d: 2 },
+    { q: 'הסיפור הומחז לאופרה לילדים עם מוזיקה של יוני רכטר.', a: ['נכון', 'לא נכון'], c: 0, e: 'דוגמה לספר ילדים שהפך גם להצגה מוזיקלית.', d: 3 },
+  ],
+  tiras: [
+    { q: 'מה מבטיח אופיר לחברים בדרך?', a: ['תירס חם', 'גלידה', 'ממתקים', 'שתייה קרה'], c: 0, e: 'ההבטחה על תירס חם מניעה את כל המסע.', d: 2 },
+    { q: 'מי מצטרף לאופיר בדרך?', a: ['יהב, לירון ועוד חברים', 'רק ההורים', 'הכלב שלו', 'המורה'], c: 0, e: 'בכל תחנה מצטרף עוד חבר עם כלי משלו.', d: 2 },
+    { q: 'מיריק שניר כותבת בעיקר לקטנטנים ולגיל הרך.', a: ['נכון', 'לא נכון'], c: 0, e: 'היא מהסופרות המוכרות ביותר לגיל הרך בישראל.', d: 3 },
+  ],
+  shmulikipod: [
+    { q: 'מה עושה קיפוד כשהוא חש סכנה?', a: ['מתכדרר לכדור קוצים', 'בורח לים', 'מטפס על עץ', 'צועק בקול'], c: 0, e: 'הקוצים הם השריון הטבעי שלו.', d: 2 },
+    { q: 'הספר עובד גם כהצגה, ואף הוקם על שמו גן סיפור.', a: ['נכון', 'לא נכון'], c: 0, e: 'הדמות הפכה לחלק מתרבות הילדים בישראל.', d: 2 },
+    { q: 'קיפוד מתכדרר לכדור כשמרגיש סכנה - זו תכונה אמיתית בטבע.', a: ['נכון', 'לא נכון'], c: 0, e: 'הספר שוזר תכונות אמיתיות של קיפודים בסיפור.', d: 3 },
+  ],
+  pooh: [
+    { q: 'מה אופיו של פו?', a: ['דוב טוב לב ומעט איטי', 'דוב כועס', 'דוב מהיר מאוד', 'דוב שלא מדבר בכלל'], c: 0, e: 'פו הוא דוב טוב לב שאוהב דבש, ולא מהחכמים שביער.', d: 2 },
+    { q: 'איך קוראים לילד שמגיע ליער לבקר את החברים?', a: ['כריסטופר רובין', 'פיטר', 'ג׳ון', 'טומי'], c: 0, e: 'כריסטופר רובין הוא חברו של פו, על פי שמו של בנו של הסופר.', d: 2 },
+    { q: 'הסופר כתב את הספר בהשראת צעצועים אמיתיים של בנו.', a: ['נכון', 'לא נכון'], c: 0, e: 'הדמויות נולדו מהצעצועים של כריסטופר רובין מילן.', d: 3 },
+  ],
+  alice: [
+    { q: 'מה מיוחד בחתול מצ׳שייר?', a: ['הוא נעלם ומשאיר אחריו חיוך', 'הוא מדבר רק בצרפתית', 'הוא ישן כל היום', 'הוא נובח'], c: 0, e: 'החיוך של החתול נשאר באוויר גם אחרי שהוא נעלם.', d: 2 },
+    { q: 'מי שולטת בממלכה שבסיפור?', a: ['מלכת הלבבות', 'מלכת השלג', 'מלכת הוורדים', 'מלכת הצעצועים'], c: 0, e: 'מלכת הלבבות פוקדת "ערפו את ראשו!" שוב ושוב.', d: 3 },
+    { q: 'הסיפור מלא במשחקי מילים ובהיגיון מוזר.', a: ['נכון', 'לא נכון'], c: 0, e: 'לואיס קרול היה מתמטיקאי, וזה ניכר בספר.', d: 2 },
+  ],
+  oz: [
+    { q: 'איך מגיעה דורותי אל ארץ עוץ?', a: ['הטורנדו נושא את ביתה', 'היא שטה בסירה', 'היא עולה בלווייתן', 'היא נרדמת בגן'], c: 0, e: 'הטורנדו נושא את הבית שלה אל ארץ עוץ.', d: 2 },
+    { q: 'איך קוראים למכשפה הרעה שמאיימת עליהם?', a: ['המכשפה הרעה מהמערב', 'המכשפה מהצפון', 'מכשפת הים', 'מלכת החושך'], c: 0, e: 'המכשפה הרעה מהמערב היא היריבה המרכזית.', d: 3 },
+    { q: 'הספר הפך לאחד מסיפורי הילדים האהובים בעולם.', a: ['נכון', 'לא נכון'], c: 0, e: 'הוא עובד להצגות ולסרט המפורסם.', d: 2 },
+  ],
+  pinocchio: [
+    { q: 'מה מבטיח פינוקיו שוב ושוב?', a: ['לשבת ללמוד ולהתנהג טוב', 'להיות נגר', 'לנסוע לים', 'למצוא זהב'], c: 0, e: 'ההבטחות וההפרות הן לב הסיפור.', d: 2 },
+    { q: 'מי מנסה לפתות את פינוקיו שוב ושוב?', a: ['השועל והחתול', 'הפיה הכחולה', 'ג׳פטו', 'המורה'], c: 0, e: 'שני הרמאים מובילים אותו לארץ הצעצועים.', d: 3 },
+    { q: 'הסיפור נכתב במקור באיטלקית.', a: ['נכון', 'לא נכון'], c: 0, e: 'קרלו קולודי כתב אותו באיטליה במאה ה-19.', d: 2 },
+  ],
+  peterpan: [
+    { q: 'מה אופייה של טינקרבל?', a: ['קטנה וקנאית אבל נאמנה', 'ענקית ורגועה', 'ישנונית', 'דובונית'], c: 0, e: 'היא מקנאה בוונדי אבל עוזרת לפיטר.', d: 2 },
+    { q: 'מה עושים הילדים בארץ לעולם לא?', a: ['נלחמים בפיראטים ומטיילים', 'הולכים לבית ספר', 'עובדים כל היום', 'ישנים בלבד'], c: 0, e: 'ההרפתקאות שלהם עם הפיראטים מלוות את הסיפור.', d: 2 },
+    { q: 'פיטר פן הוא ילד שלא גדל לעולם.', a: ['נכון', 'לא נכון'], c: 0, e: 'זה הרעיון המרכזי של הסיפור.', d: 3 },
+  ],
+  charlie: [
+    { q: 'כמה כרטיסי זהב מוסתרים בחפיסות?', a: ['חמישה', 'שלושה', 'עשרה', 'אחד'], c: 0, e: 'חמישה כרטיסים מובילים חמישה ילדים אל המפעל.', d: 2 },
+    { q: 'מה מצבה של משפחת באקט?', a: ['ענייה מאוד', 'עשירה', 'ממוצעת', 'מלכותית'], c: 0, e: 'צ׳רלי גר עם ארבעת הסבים והסבתא בדלות.', d: 2 },
+    { q: 'הספר נכתב בידי אותו מחבר של "מטילדה".', a: ['נכון', 'לא נכון'], c: 0, e: 'שניהם מאת רואלד דאל.', d: 3 },
+  ],
+  matilda: [
+    { q: 'מתי מתגלה הכוח של מטילדה?', a: ['ברגע של סכנה לחבר שלה', 'בשיעור חשבון', 'בבית שלה', 'בחצר בית הספר'], c: 0, e: 'הכוח שלה מתגלה דווקא כשהיא רוצה לעזור לחבר.', d: 2 },
+    { q: 'מה יחסם של הוריה של מטילדה לספרים?', a: ['הם בזים לקריאה', 'הם מעודדים קריאה', 'הם קוראים כל היום', 'הם כותבים ספרים'], c: 0, e: 'הם מעדיפים טלוויזיה ומזלזלים בקריאה.', d: 2 },
+    { q: 'רואלד דאל כתב ספרים רבים לילדים, ובהם "צ׳רלי והשוקולדה".', a: ['נכון', 'לא נכון'], c: 0, e: 'דאל הוא מהסופרים האהובים ביותר על ילדים בעולם.', d: 3 },
+  ],
+  jungle: [
+    { q: 'מהו "חוק הג׳ונגל"?', a: ['כללי התנהגות שבעלי החיים מצייתים להם', 'מפה של הג׳ונגל', 'שיר של קופים', 'שם של נהר'], c: 0, e: 'באלו הדב מלמד את מוגלי את חוקי היער.', d: 2 },
+    { q: 'מי רודף אחרי מוגלי לאורך הסיפור?', a: ['שירחאן הטיגריס', 'באלו הדב', 'קא הנחש', 'הפיל'], c: 0, e: 'המאבק בשירחאן הוא לב העלילה.', d: 2 },
+    { q: 'הסופר נולד בהודו, וזה ניכר בעולם של הספר.', a: ['נכון', 'לא נכון'], c: 0, e: 'קיפלינג נולד במומבאי וגדל בהודו.', d: 3 },
+  ],
+  prince: [
+    { q: 'מה רואים המבוגרים בציור הראשון של המספר?', a: ['מגבעת', 'פיל', 'נחש', 'כבשה'], c: 0, e: 'הם רואים כובע, בעוד הילדים רואים נחש שבלע פיל.', d: 2 },
+    { q: 'מה המסר הגדול של הספר?', a: ['העיקר אינו נראה לעין', 'כדאי לטוס מהר', 'כדאי לספור כוכבים', 'כדאי לצייר טוב'], c: 0, e: 'השועל מלמד שהלב רואה את מה שהעין לא רואה.', d: 2 },
+    { q: 'הספר תורגם לשפות רבות ונחשב לקלאסיקה עולמית.', a: ['נכון', 'לא נכון'], c: 0, e: 'הוא מהספרים המתורגמים ביותר בעולם.', d: 3 },
+  ],
+  'lion-mouse': [
+    { q: 'למה האריה צוחק על העכבר?', a: ['כי הוא קטן וחלש', 'כי הוא טיפש', 'כי הוא איטי', 'כי הוא צבעוני'], c: 0, e: 'האריה לא מאמין שעכבר קטן יוכל לעזור לו אי פעם.', d: 2 },
+    { q: 'מהם המשלים של אזופ?', a: ['סיפורים קצרים עם מוסר השכל', 'שירים ארוכים', 'מחזות ארוכות', 'אגדות בלי מסר'], c: 0, e: 'המשל הוא סיפור קצר שמלמד לקח.', d: 3 },
+    { q: 'המשל מלמד שלא כדאי לזלזל במי שקטן או חלש.', a: ['נכון', 'לא נכון'], c: 0, e: 'זה המוסר של הסיפור.', d: 2 },
+  ],
+  redhood: [
+    { q: 'למה הזאב מגיע לסבתא לפני כיפה אדומה?', a: ['כי הוא משכנע אותה להתעכב בדרך', 'כי הוא עף', 'כי היא ישנה', 'כי הוא גר שם'], c: 0, e: 'הוא משכנע אותה לקטוף פרחים וממהר לבד לסבתא.', d: 2 },
+    { q: 'מה עושה הצייד בסוף?', a: ['מתגבר על הזאב ומחלץ את השתיים', 'מגרש את הזאב בלבד', 'מאמץ את הזאב', 'נותן לזאב אוכל'], c: 0, e: 'הצייד מגיע בזמן ומציל את כיפה אדומה ואת סבתא.', d: 2 },
+    { q: 'הסיפור הוא מעשייה קלאסית שקיימת בגרסאות שונות.', a: ['נכון', 'לא נכון'], c: 0, e: 'יש גרסאות שונות, חלקן אכזריות יותר.', d: 3 },
+  ],
+  piglets: [
+    { q: 'איזה חומר בחר החזיר שהכי מיהר?', a: ['קש', 'לבנים', 'עץ', 'ברזל'], c: 0, e: 'הקש הוא החומר המהיר והקל, ולכן הבית לא מחזיק.', d: 2 },
+    { q: 'איך מפיל הזאב את הבתים?', a: ['בנשיפות חזקות', 'בדפיקות בדלת', 'בעזרת חברים', 'באש'], c: 0, e: 'הנשיפות הן השיטה שלו לאורך כל הסיפור.', d: 2 },
+    { q: 'הסיפור מוכר בגרסאות רבות ובשמות שונים בעולם.', a: ['נכון', 'לא נכון'], c: 0, e: 'כך קורה להרבה מעשיות עם.', d: 3 },
+  ],
+  hansel: [
+    { q: 'למה ההורים משאירים את הילדים ביער?', a: ['כי אין מספיק אוכל בבית', 'כי הילדים הרבו לריב', 'כי הם הלכו לעבודה', 'כי הם אבדו בדרך'], c: 0, e: 'המשפחה ענייה ורעבה, וזה מה שמניע את העלילה.', d: 2 },
+    { q: 'איך מצאו הילדים את הדרך הביתה בפעם הראשונה?', a: ['באמצעות אבנים לבנות שפיזרו', 'באמצעות מפה', 'בעזרת ציפור', 'בעזרת הירח'], c: 0, e: 'עמי פיזר אבנים קטנות שסימנו להם את הדרך.', d: 3 },
+    { q: 'הסיפור כונס בידי האחים גרים ופורסם לפני כמאתיים שנה.', a: ['נכון', 'לא נכון'], c: 0, e: 'מעשיות גרים כונסו במאה ה-19.', d: 2 },
+  ],
+  emperor: [
+    { q: 'למה המבוגרים מעמידים פנים שהם רואים את הבגדים?', a: ['כי הם מפחדים להיראות טיפשים', 'כי הם באמת רואים', 'כי הם עיוורים', 'כי הם אוהבים את הבד'], c: 0, e: 'איש לא רוצה להודות שהוא לא רואה - וזה סוד ההצלחה של השקר.', d: 2 },
+    { q: 'מה אופיו של הקיסר?', a: ['שחצן שאוהב בגדים חדשים', 'צנוע ופשוט', 'חכם מאוד', 'נדיב לעניים'], c: 0, e: 'הקיסר מתעניין בבגדים יותר מאשר בממלכה.', d: 2 },
+    { q: 'מה קורא הילד בקול באמצע התהלוכה?', a: ['"המלך הוא עירום!"', '"איזה יופי!"', '"הבגדים יקרים!"', '"בואו הביתה!"'], c: 0, e: 'הקריאה של הילד שוברת את השתיקה של כולם.', d: 2 },
+  ],
+  cinderella: [
+    { q: 'למה הופכת הפיה את הדלעת?', a: ['לכרכרה', 'לבית', 'לסוס', 'לעגלה'], c: 0, e: 'הדלעת הופכת לכרכרה מפוארת שמביאה אותה לנשף.', d: 2 },
+    { q: 'מה קורה בחצות?', a: ['הקסם מתפוגג', 'הנשף מתחיל', 'הנסיך נולד', 'השעון נעצר'], c: 0, e: 'בחצות הקסם נגמר וסינדרלה ממהרת הביתה.', d: 2 },
+    { q: 'הסיפור מוכר בגרסאות שונות, ובהן זו של שארל פרו.', a: ['נכון', 'לא נכון'], c: 0, e: 'פרו הוא מגדולי מספרי המעשיות בצרפת.', d: 3 },
+  ],
+};
+
+(function () {
+  'use strict';
+
+  /* ============================================================
+     ספריית המשחקונים · משחק בית ספרי לפי כיתות
+     ------------------------------------------------------------
+     • 20 כיתות (א'1 ... ו'4). לכל שחקן שמור שם + כיתה.
+     • כל משחקון שווה עד 1000 נקודות (לפי אחוז התשובות הנכונות),
+       כך שכיתה א' וכיתה ו' מתחרות באותו קנה מידה.
+     • מספר השאלות במשחקון נקבע לפי שכבת הכיתה: א'-ב' 5,
+       ג'-ד' 6, ה'-ו' 8 (מתוך 8 שאלות לכל ספר).
+     • לוח הניקוד לא מחזיק רשימת משחקונים קשיחה: הוא נגזר
+       מ-BOOKS, ולכן משחקון חדש מתווסף אוטומטית.
+     ============================================================ */
+
+  var DB_KEY = 'booksGames.v4';
+  var LEGACY_KEYS = ['booksGames.v3', 'booksGames.v2'];
+  var MAX_PER_GAME = 1000;
+  var MAX_SCORES = 3000;
+
+  var db = { players: [], activeId: null, scores: [], theme: 'light' };
+  var game = null;
+  var scoresTab = 'classes';
+
+  /* ---------------- עזרים ---------------- */
+  function esc(s) {
+    return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+    });
+  }
+  function $(id) { return document.getElementById(id); }
+  function uid(p) { return (p || 'x') + Date.now().toString(36) + Math.random().toString(36).slice(2, 7); }
+  function shuffle(a) {
+    for (var i = a.length - 1; i > 0; i--) {
+      var j = Math.floor(Math.random() * (i + 1));
+      var t = a[i]; a[i] = a[j]; a[j] = t;
+    }
+    return a;
+  }
+  function cleanName(s) { return String(s || '').replace(/\s+/g, ' ').trim().slice(0, 16); }
+  function fmtDate(ts) {
+    try {
+      var d = new Date(ts);
+      return ('0' + d.getDate()).slice(-2) + '.' + ('0' + (d.getMonth() + 1)).slice(-2) + '.' + String(d.getFullYear()).slice(2);
+    } catch (e) { return ''; }
+  }
+  function bookById(id) {
+    for (var i = 0; i < BOOKS.length; i++) if (BOOKS[i].id === id) return BOOKS[i];
+    return null;
+  }
+  function classById(id) {
+    for (var i = 0; i < CLASSES.length; i++) if (CLASSES[i].id === id) return CLASSES[i];
+    return null;
+  }
+  function classLabel(id) { var c = classById(id); return c ? c.label : '—'; }
+  function classGrade(id) { var c = classById(id); return c ? c.grade : 0; }
+  function gradePlan(grade) { return GRADE_PLAN[grade] || 5; }
+
+  /* ---------------- בניית ספרייה (8 שאלות לספר) ---------------- */
+  function ensureLibrary(b) {
+    if (b.all) return b.all;
+    var qs = (b.questions || []).map(function (q, idx) {
+      return { q: q.q, a: q.a, c: q.c, e: q.e, d: q.d || BASE_DIFFICULTY[idx] || 2 };
+    });
+    var extra = (typeof EXTRA_QUESTIONS !== 'undefined' && EXTRA_QUESTIONS[b.id]) || [];
+    for (var k = 0; k < extra.length; k++) {
+      var q2 = extra[k];
+      qs.push({ q: q2.q, a: q2.a, c: q2.c, e: q2.e, d: q2.d || 2 });
+    }
+    b.all = qs;
+    return qs;
+  }
+
+  function buildLibrary() {
+    for (var i = 0; i < BOOKS.length; i++) ensureLibrary(BOOKS[i]);
+  }
+
+  // בחירת השאלות למשחקון לפי שכבת הכיתה: הקלות קודם, ואז ערבוב סדר
+  function questionsForGrade(book, grade) {
+    var all = ensureLibrary(book);
+    var n = Math.min(gradePlan(grade), all.length);
+    var pool = all.slice().sort(function (a, b) { return a.d - b.d; });
+    return shuffle(pool.slice(0, n));
+  }
+
+  /* ---------------- אחסון והגירה ---------------- */
+  function emptyDb() { return { players: [], activeId: null, scores: [], theme: 'light' }; }
+
+  function loadDb() {
+    db = emptyDb();
+    var raw = null;
+    try { raw = localStorage.getItem(DB_KEY); } catch (e) {}
+    if (raw) {
+      try {
+        var p = JSON.parse(raw) || {};
+        db.players = Array.isArray(p.players) ? p.players.filter(function (x) { return x && x.id && x.name; }) : [];
+        db.scores = Array.isArray(p.scores) ? p.scores.filter(function (x) { return x && x.g && typeof x.s === 'number'; }) : [];
+        db.activeId = p.activeId || null;
+        db.theme = p.theme === 'dark' ? 'dark' : 'light';
+      } catch (e) { db = emptyDb(); }
+      if (!playerById(db.activeId) && db.players.length) db.activeId = db.players[0].id;
+      return;
+    }
+    migrateLegacy();
+  }
+
+  // העברת נתונים מגרסאות קודמות: מוסיפים כיתה (ריקה) ומעלים את הניקוד לסקאלה של 1000
+  function migrateLegacy() {
+    var old = null, usedKey = null;
+    for (var i = 0; i < LEGACY_KEYS.length; i++) {
+      try {
+        var raw = localStorage.getItem(LEGACY_KEYS[i]);
+        if (raw) { old = JSON.parse(raw); usedKey = LEGACY_KEYS[i]; break; }
+      } catch (e) {}
+    }
+    if (!old) return;
+    try {
+      if (usedKey === 'booksGames.v3' && Array.isArray(old.players)) {
+        db.players = old.players.map(function (p) { return { id: p.id, name: p.name, cls: p.cls || null, ts: p.ts || Date.now() }; });
+        db.scores = (old.scores || []).map(function (r) {
+          return { id: uid('s'), pid: r.pid, g: r.g, t: r.t || (bookById(r.g) || {}).title || r.g, s: Math.min(MAX_PER_GAME, Math.round((r.s || 0) * 4 / 3)), c: r.c || 0, n: r.n || 5, ts: r.ts || Date.now() };
+        });
+        db.activeId = old.activeId || null;
+        db.theme = old.theme === 'dark' ? 'dark' : 'light';
+      } else if (Array.isArray(old.records)) {
+        var byName = {};
+        (old.records || []).forEach(function (r) {
+          var nm = cleanName(r.p) || 'אורח';
+          var pl = byName[nm];
+          if (!pl) { pl = ensurePlayer(nm, true); byName[nm] = pl; }
+          db.scores.push({
+            id: uid('s'), pid: pl.id, g: r.b, t: r.t || (bookById(r.b) || {}).title || r.b,
+            s: Math.min(MAX_PER_GAME, Math.round((r.s || 0) * 4 / 3)), c: r.c || 0, n: r.n || 5, ts: r.ts || Date.now()
+          });
+        });
+        if (cleanName(old.player)) ensurePlayer(old.player, true);
+        db.theme = old.theme === 'dark' ? 'dark' : 'light';
+      }
+      if (!playerById(db.activeId) && db.players.length) db.activeId = db.players[0].id;
+      saveDb();
+    } catch (e) {}
+  }
+
+  function saveDb() {
+    try { localStorage.setItem(DB_KEY, JSON.stringify(db)); } catch (e) {}
+  }
+
+  /* ---------------- שחקנים ---------------- */
+  function playerById(id) {
+    if (!id) return null;
+    for (var i = 0; i < db.players.length; i++) if (db.players[i].id === id) return db.players[i];
+    return null;
+  }
+  function playerByName(name) {
+    var n = cleanName(name).toLowerCase();
+    if (!n) return null;
+    for (var i = 0; i < db.players.length; i++) {
+      if (String(db.players[i].name).toLowerCase() === n) return db.players[i];
+    }
+    return null;
+  }
+  function ensurePlayer(name, silent) {
+    var n = cleanName(name);
+    if (!n) return playerById(db.activeId);
+    var found = playerByName(n);
+    if (found) { if (!silent) { db.activeId = found.id; saveDb(); } return found; }
+    var pl = { id: uid('p'), name: n, cls: $('classSel') ? ($('classSel').value || null) : null, ts: Date.now() };
+    db.players.push(pl);
+    db.activeId = pl.id;
+    saveDb();
+    return pl;
+  }
+  function activePlayer() {
+    var pl = playerById(db.activeId);
+    if (!pl && db.players.length) { pl = db.players[0]; db.activeId = pl.id; }
+    return pl || null;
+  }
+  function activeName() { var p = activePlayer(); return p ? p.name : 'אורח'; }
+  function setPlayerClass(pid, clsId) {
+    var pl = playerById(pid);
+    if (!pl) return;
+    pl.cls = clsId || null;
+    saveDb();
+  }
+  function renamePlayer(id, name) {
+    var pl = playerById(id); var n = cleanName(name);
+    if (!pl || !n) return false;
+    var other = playerByName(n);
+    if (other && other.id !== id) return false;
+    pl.name = n; saveDb(); return true;
+  }
+  function deletePlayer(id) {
+    db.players = db.players.filter(function (p) { return p.id !== id; });
+    db.scores = db.scores.filter(function (s) { return s.pid !== id; });
+    if (db.activeId === id) db.activeId = db.players.length ? db.players[0].id : null;
+    saveDb();
+  }
+
+  /* ---------------- מנוע הניקוד ---------------- */
+  function addScore(rec) {
+    var r = {
+      id: uid('s'), pid: rec.pid, g: rec.g, t: rec.t,
+      s: rec.s, c: rec.c, n: rec.n, cls: rec.cls || null, ts: Date.now()
+    };
+    db.scores.push(r);
+    if (db.scores.length > MAX_SCORES) db.scores = db.scores.slice(-MAX_SCORES);
+    saveDb();
+    return r;
+  }
+  function scoreFor(correct, total) { return total ? Math.round(MAX_PER_GAME * correct / total) : 0; }
+
+  function bestRecord(g, pid) {
+    var best = null;
+    for (var i = 0; i < db.scores.length; i++) {
+      var r = db.scores[i];
+      if (g && r.g !== g) continue;
+      if (pid && r.pid !== pid) continue;
+      if (!best || r.s > best.s || (r.s === best.s && r.ts < best.ts)) best = r;
+    }
+    return best;
+  }
+  function bestScore(g, pid) { var r = bestRecord(g, pid); return r ? r.s : null; }
+
+  function playerTotals(pid) {
+    var total = 0, games = 0, best = 0, accSum = 0, books = {}, last = 0;
+    for (var i = 0; i < db.scores.length; i++) {
+      var r = db.scores[i];
+      if (r.pid !== pid) continue;
+      total += r.s; games++;
+      if (r.s > best) best = r.s;
+      if (r.n) accSum += r.c / r.n;
+      books[r.g] = 1;
+      if (r.ts > last) last = r.ts;
+    }
+    return {
+      total: total, games: games, best: best, books: Object.keys(books).length,
+      acc: games ? Math.round(accSum / games * 100) : 0, last: last
+    };
+  }
+
+  function ranking() {
+    return db.players.map(function (p) {
+      var t = playerTotals(p.id);
+      return { id: p.id, name: p.name, cls: p.cls, total: t.total, games: t.games, best: t.best, acc: t.acc, books: t.books, last: t.last };
+    }).sort(function (a, b) { return b.total - a.total || b.best - a.best || b.games - a.games; });
+  }
+
+  function gameBoard() {
+    return BOOKS.map(function (b) {
+      var lib = ensureLibrary(b);
+      var rec = bestRecord(b.id, null);
+      var plays = 0;
+      for (var i = 0; i < db.scores.length; i++) if (db.scores[i].g === b.id) plays++;
+      var holder = rec ? playerById(rec.pid) : null;
+      return {
+        id: b.id, title: b.title, author: b.author, emoji: b.emoji, questions: lib.length,
+        best: rec ? rec.s : null, holder: holder ? holder.name : '', holderClass: holder ? classLabel(holder.cls) : '',
+        correct: rec ? rec.c : null, total: rec ? rec.n : null, plays: plays
+      };
+    });
+  }
+
+  /* לוח הכיתות: ניקוד כולל, ממוצע לתלמיד, שחקנים, משחקונים וספרים */
+  function classBoard() {
+    var rows = CLASSES.map(function (c) {
+      var ids = [], playersCount = 0;
+      for (var i = 0; i < db.players.length; i++) {
+        if (db.players[i].cls === c.id) { ids.push(db.players[i].id); playersCount++; }
+      }
+      var total = 0, games = 0, best = 0, accSum = 0, books = {};
+      for (var k = 0; k < db.scores.length; k++) {
+        var r = db.scores[k];
+        if (ids.indexOf(r.pid) === -1) continue;
+        total += r.s; games++;
+        if (r.s > best) best = r.s;
+        if (r.n) accSum += r.c / r.n;
+        books[r.g] = 1;
+      }
+      return {
+        id: c.id, label: c.label, grade: c.grade, players: playersCount,
+        total: total, games: games, best: best,
+        avg: playersCount ? Math.round(total / playersCount) : 0,
+        acc: games ? Math.round(accSum / games * 100) : 0,
+        books: Object.keys(books).length
+      };
+    });
+    rows.sort(function (a, b) {
+      return b.avg - a.avg || b.total - a.total || b.players - a.players;
+    });
+    return rows;
+  }
+
+  /* ---------------- מסכים ---------------- */
+  function show(id) {
+    var all = document.querySelectorAll('.screen');
+    for (var i = 0; i < all.length; i++) all[i].classList.remove('on');
+    $(id).classList.add('on');
+    window.scrollTo(0, 0);
+  }
+  function applyTheme() {
+    document.documentElement.setAttribute('data-theme', db.theme);
+    $('themeBtn').textContent = db.theme === 'dark' ? '☀️' : '🌙';
+  }
+
+  /* ---------------- כיתות בשדה הבחירה ---------------- */
+  function fillClassSelect() {
+    var sel = $('classSel');
+    if (sel.options.length) return;
+    var first = document.createElement('option');
+    first.value = ''; first.textContent = 'בחרו כיתה';
+    sel.appendChild(first);
+    for (var g = 0; g < GRADE_GROUPS.length; g++) {
+      var group = GRADE_GROUPS[g];
+      var og = document.createElement('optgroup');
+      og.label = group.label;
+      for (var i = 0; i < CLASSES.length; i++) {
+        if (CLASSES[i].grade !== group.grade) continue;
+        var o = document.createElement('option');
+        o.value = CLASSES[i].id;
+        o.textContent = CLASSES[i].label;
+        og.appendChild(o);
+      }
+      sel.appendChild(og);
+    }
+  }
+
+  /* ---------------- מסך הבית ---------------- */
+  function renderPlayerBar() {
+    var pl = activePlayer();
+    var input = $('playerName');
+    if (document.activeElement !== input) input.value = pl ? pl.name : '';
+    var csel = $('classSel');
+    if (document.activeElement !== csel) csel.value = pl && pl.cls ? pl.cls : '';
+
+    var t = pl ? playerTotals(pl.id) : { total: 0, games: 0, books: 0 };
+    var grade = pl && pl.cls ? classGrade(pl.cls) : 0;
+    $('homeStats').innerHTML =
+      '<span class="chip">ניקוד כולל <b>' + t.total + '</b></span>' +
+      '<span class="chip">משחקונים <b>' + t.games + '</b></span>' +
+      '<span class="chip">ספרים <b>' + t.books + '/' + BOOKS.length + '</b></span>' +
+      '<span class="chip">' + (grade ? 'במשחקון: <b>' + gradePlan(grade) + '</b> שאלות' : 'בחרו כיתה כדי לקבוע אורך משחקון') + '</span>';
+
+    var chips = '';
+    if (!db.players.length) {
+      chips = '<span class="chip ghostchip">עוד לא נשמרו שמות — כתבו שם למעלה והוא יישמר</span>';
+    } else {
+      for (var i = 0; i < db.players.length; i++) {
+        var p = db.players[i];
+        var pt = playerTotals(p.id);
+        chips += '<button class="pchip' + (pl && p.id === pl.id ? ' on' : '') + '" data-pid="' + esc(p.id) + '">' +
+          esc(p.name) + (p.cls ? ' · ' + esc(classLabel(p.cls)) : '') + ' <b>' + pt.total + '</b></button>';
+      }
+    }
+    $('playerChips').innerHTML = chips;
+
+    var books = 0;
+    if (pl) books = playerTotals(pl.id).books;
+    $('progressTxt').textContent = 'הושלמו ' + books + ' מתוך ' + BOOKS.length + ' ספרים';
+  }
+
+  function renderHome() {
+    renderPlayerBar();
+    var pl = activePlayer();
+    var html = '';
+    for (var k = 0; k < BOOKS.length; k++) {
+      var b = BOOKS[k];
+      var best = pl ? bestScore(b.id, pl.id) : null;
+      html += '<button class="book" data-book="' + esc(b.id) + '" style="--h:' + (b.hue || 20) + '">' +
+        '<div class="inner">' +
+          '<div class="emoji">' + b.emoji + '</div>' +
+          '<div class="title">' + esc(b.title) + '</div>' +
+          '<div class="author">' + esc(b.author) + '</div>' +
+          '<div class="foot">' +
+            (best !== null ? '<span class="done">✓ ' + best + '</span>' : '<span style="opacity:.75;font-size:12px">' + b.all.length + ' שאלות</span>') +
+            '<span class="play">שחקו ←</span>' +
+          '</div>' +
+        '</div>' +
+        '<div class="cover-emoji">' + b.emoji + '</div>' +
+      '</button>';
+    }
+    $('bookGrid').innerHTML = html;
+  }
+
+  function selectPlayer(id) {
+    if (!playerById(id)) return;
+    db.activeId = id; saveDb(); renderHome(); renderScores();
+  }
+
+  /* ---------------- משחק ---------------- */
+  function startGame(bookId) {
+    var book = bookById(bookId);
+    if (!book) return;
+    if (!activePlayer()) ensurePlayer(cleanName($('playerName').value) || 'אורח');
+    var pl = activePlayer();
+    var grade = pl && pl.cls ? classGrade(pl.cls) : 0;
+
+    var qs = questionsForGrade(book, grade).map(function (q) {
+      var opts = q.a.map(function (text, i) { return { text: text, ok: i === q.c }; });
+      return { q: q.q, e: q.e, opts: shuffle(opts) };
+    });
+
+    game = { book: book, qs: qs, idx: 0, score: 0, correct: 0, streak: 0, bestStreak: 0, answered: false };
+
+    $('gameTitle').textContent = book.emoji + ' ' + book.title;
+    $('gameAuthor').textContent = book.author + ' · ' + activeName() + (pl && pl.cls ? ' · ' + classLabel(pl.cls) : '');
+    show('screen-game');
+    renderQuestion();
+  }
+
+  function renderQuestion() {
+    var q = game.qs[game.idx];
+    var n = game.qs.length;
+    game.answered = false;
+
+    $('qCounter').textContent = 'שאלה ' + (game.idx + 1) + ' מתוך ' + n;
+    $('qStreak').textContent = game.streak > 1 ? '🔥 רצף ' + game.streak : '';
+    $('gamePts').textContent = game.score + ' נק׳';
+    $('qBar').style.width = (game.idx / n * 100) + '%';
+    $('qText').textContent = q.q;
+    $('qHint').textContent = q.opts.length === 2 ? 'נכון או לא נכון?' : 'בחרו תשובה אחת';
+
+    var html = '';
+    for (var i = 0; i < q.opts.length; i++) {
+      html += '<button class="opt" data-i="' + i + '"><span class="k">' + (i + 1) + '</span><span>' +
+        esc(q.opts[i].text) + '</span></button>';
+    }
+    $('qOpts').innerHTML = html;
+    var fb = $('qFb');
+    fb.className = 'fb'; fb.innerHTML = '';
+    $('nextBtn').style.display = 'none';
+    $('nextBtn').textContent = game.idx === n - 1 ? 'לתוצאות ←' : 'הבא ←';
+  }
+
+  function answer(i) {
+    if (!game || game.answered) return;
+    var q = game.qs[game.idx];
+    if (!q.opts[i]) return;
+    game.answered = true;
+
+    var buttons = $('qOpts').querySelectorAll('.opt');
+    var okIndex = -1;
+    for (var k = 0; k < q.opts.length; k++) if (q.opts[k].ok) okIndex = k;
+    for (var j = 0; j < buttons.length; j++) {
+      buttons[j].disabled = true;
+      if (j === okIndex) buttons[j].classList.add('ok');
+      if (j === i && i !== okIndex) buttons[j].classList.add('bad');
+    }
+
+    var fb = $('qFb');
+    var before = game.score;
+    if (q.opts[i].ok) {
+      game.correct++;
+      game.streak++;
+      if (game.streak > game.bestStreak) game.bestStreak = game.streak;
+      game.score = scoreFor(game.correct, game.qs.length);
+      var gain = game.score - before;
+      fb.className = 'fb on good';
+      fb.innerHTML = '<b>נכון! +' + gain + ' נקודות' + (game.streak > 2 ? ' · רצף ' + game.streak + ' 🔥' : '') + '</b>' + esc(q.e || '');
+    } else {
+      game.streak = 0;
+      fb.className = 'fb on wrong';
+      fb.innerHTML = '<b>לא נכון. התשובה הנכונה: ' + esc(q.opts[okIndex].text) + '</b>' + esc(q.e || '');
+    }
+
+    $('gamePts').textContent = game.score + ' נק׳';
+    $('qStreak').textContent = game.streak > 1 ? '🔥 רצף ' + game.streak : '';
+    $('qBar').style.width = ((game.idx + 1) / game.qs.length * 100) + '%';
+    $('nextBtn').style.display = 'inline-block';
+    $('nextBtn').focus();
+  }
+
+  function nextQuestion() {
+    if (!game || !game.answered) return;
+    game.idx++;
+    if (game.idx >= game.qs.length) finishGame();
+    else renderQuestion();
+  }
+
+  function finishGame() {
+    var pl = activePlayer() || ensurePlayer('אורח');
+    var total = game.qs.length;
+    var correct = game.correct;
+    var prevBest = bestScore(game.book.id, pl.id);
+
+    addScore({ pid: pl.id, g: game.book.id, t: game.book.title, s: game.score, c: correct, n: total, cls: pl.cls });
+    var afterBest = bestScore(game.book.id, pl.id);
+
+    var pct = correct / total;
+    var title, emoji;
+    if (pct === 1) { title = 'אלוף הספרים!'; emoji = '👑'; }
+    else if (pct >= 0.8) { title = 'מעולה!'; emoji = '🏆'; }
+    else if (pct >= 0.6) { title = 'יפה מאוד'; emoji = '🏅'; }
+    else if (pct >= 0.4) { title = 'לא רע, יש עוד מה לשפר'; emoji = '📖'; }
+    else { title = 'כדאי לקרוא את הספר שוב'; emoji = '🌱'; }
+
+    var stars = '';
+    for (var i = 0; i < total; i++) stars += i < correct ? '⭐' : '☆';
+
+    $('endEmoji').textContent = emoji;
+    $('endTitle').textContent = title;
+    $('endBook').textContent = game.book.emoji + ' ' + game.book.title + ' · ' + game.book.author;
+    $('endWho').textContent = pl.name + (pl.cls ? ' · כיתה ' + classLabel(pl.cls) : ' · בלי כיתה') +
+      ' · ' + total + ' שאלות · רצף שיא ' + game.bestStreak;
+    $('endStars').textContent = stars;
+    $('endScore').textContent = game.score;
+    $('endCorrect').textContent = 'עניתם נכון על ' + correct + ' מתוך ' + total + ' שאלות · מתוך 1000 נקודות';
+
+    var recLine = '';
+    var isRecord = prevBest === null || game.score > prevBest;
+    if (isRecord) {
+      recLine = '<span class="rec">🎉 שיא חדש ל' + esc(pl.name) + ' במשחקון הזה!</span>';
+      if (prevBest !== null) recLine += '<span class="sub"> השיא הקודם: ' + prevBest + '</span>';
+    } else {
+      recLine = '<span class="sub">השיא שלך במשחקון הזה: <b>' + afterBest + '</b></span>';
+    }
+    $('endRecord').innerHTML = recLine;
+
+    show('screen-end');
+    renderHome();
+    renderScores();
+  }
+
+  /* ---------------- לוח הניקוד ---------------- */
+  function fillSelect(sel, items, keepFirst, value) {
+    while (sel.options.length > keepFirst) sel.remove(keepFirst);
+    for (var i = 0; i < items.length; i++) {
+      var o = document.createElement('option');
+      o.value = items[i].value;
+      o.textContent = items[i].label;
+      sel.appendChild(o);
+    }
+    if (value !== undefined) sel.value = value;
+  }
+
+  function renderScores() {
+    var pf = $('playerFilter'), cf = $('classFilter'), bf = $('bookFilter');
+    var pfVal = pf.value, cfVal = cf.value, bfVal = bf.value;
+
+    fillSelect(pf, db.players.map(function (p) { return { value: p.id, label: p.name + (p.cls ? ' (' + classLabel(p.cls) + ')' : '') }; }), 1, pfVal);
+    fillSelect(cf, CLASSES.map(function (c) { return { value: c.id, label: 'כיתה ' + c.label }; }), 1, cfVal);
+    fillSelect(bf, BOOKS.map(function (b) { return { value: b.id, label: b.title }; }), 1, bfVal);
+
+    var tabs = document.querySelectorAll('.tab');
+    for (var t = 0; t < tabs.length; t++) tabs[t].classList.toggle('on', tabs[t].getAttribute('data-tab') === scoresTab);
+    var isResults = scoresTab === 'results';
+    $('filtersRow').style.display = isResults ? 'flex' : 'none';
+    $('sortSel').style.display = isResults ? 'inline-block' : 'none';
+
+    if (scoresTab === 'classes') renderClassesTab();
+    else if (scoresTab === 'players') renderPlayersTab();
+    else if (scoresTab === 'records') renderRecordsTab();
+    else renderResultsTab();
+
+    $('exportNote').textContent = 'שמורים ' + db.scores.length + ' תוצאות של ' + db.players.length +
+      ' שחקנים מ-' + activeClassCount() + ' כיתות. הייצוא שומר קובץ JSON שאפשר לייבא במכשיר אחר.';
+  }
+
+  function activeClassCount() {
+    var seen = {};
+    for (var i = 0; i < db.players.length; i++) if (db.players[i].cls) seen[db.players[i].cls] = 1;
+    return Object.keys(seen).length;
+  }
+
+  function renderClassesTab() {
+    var rows = classBoard();
+    var playing = rows.filter(function (r) { return r.players > 0; }).length;
+    $('scoresCount').innerHTML = '<b>' + playing + '/' + CLASSES.length + '</b> כיתות עם תוצאות';
+    var html = '<div class="tblwrap"><table><thead><tr>' +
+      '<th class="rank">#</th><th>כיתה</th><th>ניקוד כולל</th><th>ממוצע לתלמיד</th><th>תלמידים</th><th>משחקונים</th><th>ספרים</th><th>דיוק</th>' +
+      '</tr></thead><tbody>';
+    for (var i = 0; i < rows.length; i++) {
+      var r = rows[i];
+      var medal = r.players === 0 ? (i + 1) : (i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : (i + 1));
+      html += '<tr' + (r.players ? '' : ' class="dim"') + '>' +
+        '<td class="rank">' + medal + '</td>' +
+        '<td><b>כיתה ' + esc(r.label) + '</b></td>' +
+        '<td class="num" style="color:var(--brand)">' + r.total + '</td>' +
+        '<td class="num">' + (r.players ? r.avg : '—') + '</td>' +
+        '<td>' + r.players + '</td>' +
+        '<td>' + r.games + '</td>' +
+        '<td>' + r.books + '/' + BOOKS.length + '</td>' +
+        '<td>' + (r.players ? r.acc + '%' : '—') + '</td>' +
+      '</tr>';
+    }
+    html += '</tbody></table></div>';
+    $('scoresTable').innerHTML = html;
+    $('scoresMore').innerHTML = '<p class="footnote">הדירוג לפי ממוצע נקודות לתלמיד, כדי שכיתה עם פחות תלמידים לא תיענש. ' +
+      'כל משחקון שווה עד 1000 נקודות לכל הכיתות.</p>';
+  }
+
+  function renderPlayersTab() {
+    $('scoresCount').innerHTML = '<b>' + db.players.length + '</b> שחקנים';
+    var rows = ranking();
+    if (!rows.length) {
+      $('scoresTable').innerHTML = '<div class="empty">עוד אין שמות שמורים. כתבו שם במסך הבית והוא יישמר כאן.</div>';
+      $('scoresMore').innerHTML = '';
+      return;
+    }
+    var html = '<div class="tblwrap"><table><thead><tr>' +
+      '<th class="rank">#</th><th>שחקן</th><th>כיתה</th><th>ניקוד כולל</th><th>משחקונים</th><th>שיא אישי</th><th>דיוק</th><th></th>' +
+      '</tr></thead><tbody>';
+    for (var i = 0; i < rows.length; i++) {
+      var r = rows[i];
+      var medal = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : (i + 1);
+      html += '<tr' + (r.id === db.activeId ? ' class="me"' : '') + '>' +
+        '<td class="rank">' + medal + '</td>' +
+        '<td><button class="plink" data-select="' + esc(r.id) + '">' + esc(r.name) + '</button>' +
+          (r.id === db.activeId ? ' <span class="tag">פעיל</span>' : '') + '</td>' +
+        '<td>' + (r.cls ? esc(classLabel(r.cls)) : '<span class="muted">—</span>') + '</td>' +
+        '<td class="num" style="color:var(--brand)">' + r.total + '</td>' +
+        '<td>' + r.games + '</td>' +
+        '<td>' + (r.best || '—') + '</td>' +
+        '<td>' + (r.games ? r.acc + '%' : '—') + '</td>' +
+        '<td class="rowbtns">' +
+          '<button class="ic" data-rename="' + esc(r.id) + '" title="שינוי שם">✎</button>' +
+          '<button class="ic danger3" data-del="' + esc(r.id) + '" title="מחיקת שחקן">🗑</button>' +
+        '</td>' +
+      '</tr>';
+    }
+    html += '</tbody></table></div>';
+    $('scoresTable').innerHTML = html;
+    $('scoresMore').innerHTML = '<p class="footnote">לוחצים על שם כדי להפוך אותו לשחקן הפעיל. כיתה נקבעת במסך הבית.</p>';
+  }
+
+  function renderRecordsTab() {
+    var board = gameBoard();
+    var played = board.filter(function (g) { return g.plays > 0; }).length;
+    $('scoresCount').innerHTML = '<b>' + played + '/' + board.length + '</b> משחקונים עם שיא';
+    var html = '<div class="tblwrap"><table><thead><tr>' +
+      '<th>משחקון</th><th>שיאן</th><th>כיתה</th><th>שיא</th><th>נכון</th><th>משחקים</th><th></th>' +
+      '</tr></thead><tbody>';
+    for (var i = 0; i < board.length; i++) {
+      var g = board[i];
+      html += '<tr>' +
+        '<td><span class="gname">' + g.emoji + ' ' + esc(g.title) + '</span>' +
+          '<span class="gsub">' + esc(g.author) + ' · ' + g.questions + ' שאלות</span></td>' +
+        '<td>' + (g.best === null ? '<span class="muted">—</span>' : esc(g.holder)) + '</td>' +
+        '<td>' + (g.best === null ? '<span class="muted">—</span>' : esc(g.holderClass)) + '</td>' +
+        '<td class="num"' + (g.best === null ? '' : ' style="color:var(--brand)"') + '>' + (g.best === null ? '—' : g.best) + '</td>' +
+        '<td>' + (g.best === null ? '—' : g.correct + '/' + g.total) + '</td>' +
+        '<td>' + g.plays + '</td>' +
+        '<td class="rowbtns"><button class="mini play-mini" data-play="' + esc(g.id) + '">שחקו</button></td>' +
+      '</tr>';
+    }
+    html += '</tbody></table></div>';
+    $('scoresTable').innerHTML = html;
+    $('scoresMore').innerHTML = '<p class="footnote">שורה לכל משחקון בספרייה. משחקון חדש שנוסף לרשימה יופיע כאן אוטומטית.</p>';
+  }
+
+  function renderResultsTab() {
+    var pfVal = $('playerFilter').value;
+    var cfVal = $('classFilter').value;
+    var bfVal = $('bookFilter').value;
+    var sort = $('sortSel').value;
+
+    var rows = db.scores.filter(function (r) {
+      if (pfVal && r.pid !== pfVal) return false;
+      if (bfVal && r.g !== bfVal) return false;
+      if (cfVal) {
+        var pl = playerById(r.pid);
+        if (!pl || pl.cls !== cfVal) return false;
+      }
+      return true;
+    });
+
+    $('scoresCount').innerHTML = '<b>' + rows.length + '</b> תוצאות';
+    if (!rows.length) {
+      $('scoresTable').innerHTML = '<div class="empty">אין תוצאות שמתאימות לסינון הזה.</div>';
+      $('scoresMore').innerHTML = '';
+      return;
+    }
+
+    rows.sort(function (a, b) {
+      if (sort === 'recent') return b.ts - a.ts;
+      if (sort === 'accuracy') {
+        var aa = a.n ? a.c / a.n : 0, bb = b.n ? b.c / b.n : 0;
+        return bb - aa || b.s - a.s;
+      }
+      return b.s - a.s || b.ts - a.ts;
+    });
+
+    var top = rows.slice(0, 100);
+    var html = '<div class="tblwrap"><table><thead><tr>' +
+      '<th class="rank">#</th><th>שחקן</th><th>כיתה</th><th>משחקון</th><th>ניקוד</th><th>נכון</th><th>תאריך</th>' +
+      '</tr></thead><tbody>';
+    for (var i = 0; i < top.length; i++) {
+      var r = top[i];
+      var pl = playerById(r.pid);
+      var medal = sort === 'score' ? (i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : (i + 1)) : (i + 1);
+      html += '<tr>' +
+        '<td class="rank">' + medal + '</td>' +
+        '<td>' + esc(pl ? pl.name : '—') + '</td>' +
+        '<td>' + esc(pl && pl.cls ? classLabel(pl.cls) : '—') + '</td>' +
+        '<td>' + esc(r.t || r.g) + '</td>' +
+        '<td class="num" style="color:var(--brand)">' + r.s + '</td>' +
+        '<td>' + r.c + '/' + r.n + '</td>' +
+        '<td style="color:var(--muted)">' + fmtDate(r.ts) + '</td>' +
+      '</tr>';
+    }
+    html += '</tbody></table></div>';
+    $('scoresTable').innerHTML = html;
+    $('scoresMore').innerHTML = rows.length > 100
+      ? '<p class="footnote">מוצגות 100 התוצאות הראשונות מתוך ' + rows.length + '.</p>' : '';
+  }
+
+  /* ---------------- ייצוא / ייבוא ---------------- */
+  function exportScores() {
+    var payload = {
+      app: 'books-games', version: 4, exported: new Date().toISOString(),
+      games: BOOKS.map(function (b) { return { id: b.id, title: b.title, questions: b.all.length }; }),
+      classes: CLASSES.map(function (c) { return { id: c.id, label: c.label, grade: c.grade }; }),
+      players: db.players.map(function (p) { return { id: p.id, name: p.name, cls: p.cls || null }; }),
+      scores: db.scores.map(function (r) { return { pid: r.pid, g: r.g, t: r.t, s: r.s, c: r.c, n: r.n, ts: r.ts }; })
+    };
+    var text = JSON.stringify(payload, null, 2);
+    try {
+      var blob = new Blob([text], { type: 'application/json' });
+      var url = URL.createObjectURL(blob);
+      var a = document.createElement('a');
+      a.href = url;
+      a.download = 'books-scores-' + new Date().toISOString().slice(0, 10) + '.json';
+      document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(function () { URL.revokeObjectURL(url); }, 3000);
+      $('exportNote').textContent = 'יוצאו ' + db.scores.length + ' תוצאות של ' + db.players.length + ' שחקנים.';
+    } catch (e) {
+      $('exportNote').textContent = 'לא הצלחתי לייצא במכשיר הזה.';
+    }
+  }
+
+  function plNameFrom(pid, data) {
+    if (!data || !Array.isArray(data.players)) return '';
+    for (var i = 0; i < data.players.length; i++) if (data.players[i].id === pid) return data.players[i].name;
+    return '';
+  }
+  function plClassFrom(pid, data) {
+    if (!data || !Array.isArray(data.players)) return null;
+    for (var i = 0; i < data.players.length; i++) if (data.players[i].id === pid) return data.players[i].cls || null;
+    return null;
+  }
+
+  function importScores(file) {
+    var reader = new FileReader();
+    reader.onload = function () {
+      var data = null;
+      try { data = JSON.parse(String(reader.result)); } catch (e) { data = null; }
+      if (!data || !Array.isArray(data.scores)) {
+        $('exportNote').textContent = 'הקובץ לא נראה כמו קובץ תוצאות של המשחק.';
+        return;
+      }
+      var added = 0;
+      for (var i = 0; i < data.scores.length; i++) {
+        var r = data.scores[i];
+        if (!r || !r.g || typeof r.s !== 'number') continue;
+        var nm = plNameFrom(r.pid, data) || 'אורח';
+        var pl = playerById(r.pid) || playerByName(nm) || ensurePlayer(nm);
+        if (!pl.cls) { var c = plClassFrom(r.pid, data); if (c) { pl.cls = c; } }
+        db.scores.push({
+          id: uid('s'), pid: pl.id, g: r.g, t: r.t || (bookById(r.g) || {}).title || r.g,
+          s: Math.min(MAX_PER_GAME, r.s), c: r.c || 0, n: r.n || 5, cls: pl.cls || null, ts: r.ts || Date.now()
+        });
+        added++;
+      }
+      saveDb();
+      renderScores(); renderHome();
+      $('exportNote').textContent = 'יובאו ' + added + ' תוצאות.';
+    };
+    reader.onerror = function () { $('exportNote').textContent = 'לא הצלחתי לקרוא את הקובץ.'; };
+    reader.readAsText(file);
+  }
+
+  /* ---------------- אירועים ---------------- */
+  function bind() {
+    $('themeBtn').addEventListener('click', function () {
+      db.theme = db.theme === 'dark' ? 'light' : 'dark';
+      applyTheme(); saveDb();
+    });
+
+    var nameInput = $('playerName');
+    function commitName() {
+      var v = cleanName(nameInput.value);
+      var pl = activePlayer();
+      if (!v) { nameInput.value = pl ? pl.name : ''; return; }
+      if (pl && cleanName(pl.name) === v) return;
+      var existing = playerByName(v);
+      if (existing) { db.activeId = existing.id; saveDb(); }
+      else { ensurePlayer(v); }
+      renderPlayerBar();
+      setTimeout(function () { renderHome(); }, 0);
+    }
+    nameInput.addEventListener('change', commitName);
+    nameInput.addEventListener('blur', commitName);
+    nameInput.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter') { e.preventDefault(); commitName(); nameInput.blur(); }
+    });
+
+    $('newPlayerBtn').addEventListener('click', function () {
+      nameInput.value = '';
+      nameInput.focus();
+      nameInput.placeholder = 'שם השחקן החדש ואז Enter';
+    });
+
+    $('classSel').addEventListener('change', function () {
+      var pl = activePlayer();
+      if (!pl) {
+        var nm = cleanName(nameInput.value);
+        if (!nm) { this.value = ''; nameInput.focus(); return; }
+        pl = ensurePlayer(nm);
+      }
+      setPlayerClass(pl.id, this.value || null);
+      renderPlayerBar(); renderHome(); renderScores();
+    });
+
+    $('playerChips').addEventListener('click', function (e) {
+      var b = e.target.closest ? e.target.closest('[data-pid]') : null;
+      if (!b) return;
+      selectPlayer(b.getAttribute('data-pid'));
+    });
+
+    $('bookGrid').addEventListener('click', function (e) {
+      var btn = e.target.closest ? e.target.closest('.book') : null;
+      if (!btn) return;
+      startGame(btn.getAttribute('data-book'));
+    });
+
+    $('qOpts').addEventListener('click', function (e) {
+      var btn = e.target.closest ? e.target.closest('.opt') : null;
+      if (!btn) return;
+      answer(parseInt(btn.getAttribute('data-i'), 10));
+    });
+    $('nextBtn').addEventListener('click', nextQuestion);
+
+    $('quitBtn').addEventListener('click', function () { game = null; renderHome(); show('screen-home'); });
+    $('againBtn').addEventListener('click', function () { if (game) startGame(game.book.id); });
+    $('endHomeBtn').addEventListener('click', function () { renderHome(); show('screen-home'); });
+    $('endScoresBtn').addEventListener('click', function () { renderScores(); show('screen-scores'); });
+    $('toScores').addEventListener('click', function () { scoresTab = 'classes'; renderScores(); show('screen-scores'); });
+    $('backHome2').addEventListener('click', function () { renderHome(); show('screen-home'); });
+
+    var tabs = document.querySelectorAll('.tab');
+    for (var i = 0; i < tabs.length; i++) {
+      tabs[i].addEventListener('click', function () {
+        scoresTab = this.getAttribute('data-tab');
+        renderScores();
+      });
+    }
+    $('bookFilter').addEventListener('change', renderScores);
+    $('playerFilter').addEventListener('change', renderScores);
+    $('classFilter').addEventListener('change', renderScores);
+    $('sortSel').addEventListener('change', renderScores);
+
+    $('scoresTable').addEventListener('click', function (e) {
+      var t = e.target;
+      if (!t.closest) return;
+      var selBtn = t.closest('[data-select]');
+      if (selBtn) { selectPlayer(selBtn.getAttribute('data-select')); return; }
+      var ren = t.closest('[data-rename]');
+      if (ren) {
+        var pid = ren.getAttribute('data-rename');
+        var pl = playerById(pid);
+        var nv = window.prompt('שם חדש לשחקן:', pl ? pl.name : '');
+        if (nv === null) return;
+        if (!renamePlayer(pid, nv)) { window.alert('השם ריק או שכבר תפוס על ידי שחקן אחר.'); return; }
+        renderScores(); renderHome();
+        return;
+      }
+      var del = t.closest('[data-del]');
+      if (del) {
+        var did = del.getAttribute('data-del');
+        var dp = playerById(did);
+        if (window.confirm('למחוק את ' + (dp ? dp.name : '') + ' ואת כל התוצאות שלו? אי אפשר לבטל.')) {
+          deletePlayer(did); renderScores(); renderHome();
+        }
+        return;
+      }
+      var play = t.closest('[data-play]');
+      if (play) { startGame(play.getAttribute('data-play')); }
+    });
+
+    $('exportBtn').addEventListener('click', exportScores);
+    $('importBtn').addEventListener('click', function () { $('importFile').click(); });
+    $('importFile').addEventListener('change', function () {
+      if (this.files && this.files[0]) { importScores(this.files[0]); this.value = ''; }
+    });
+    $('clearScores').addEventListener('click', function () {
+      if (window.confirm('למחוק את כל התוצאות? השמות והכיתות יישארו. אי אפשר לבטל.')) {
+        db.scores = []; saveDb(); renderScores(); renderHome();
+      }
+    });
+
+    document.addEventListener('keydown', function (e) {
+      if (!$('screen-game').classList.contains('on')) return;
+      if (e.key >= '1' && e.key <= '6') answer(parseInt(e.key, 10) - 1);
+      else if (e.key === 'Enter' || e.key === ' ') {
+        if (game && game.answered) { e.preventDefault(); nextQuestion(); }
+      }
+    });
+  }
+
+  /* ---------------- init ---------------- */
+  buildLibrary();
+  loadDb();
+  applyTheme();
+  fillClassSelect();
+  bind();
+  renderHome();
+  renderScores();
+
+  window.__booksGame = {
+    books: BOOKS,
+    classes: CLASSES,
+    state: function () { return { db: db, game: game }; },
+    api: {
+      addScore: addScore, bestScore: bestScore, bestRecord: bestRecord, scoreFor: scoreFor,
+      playerTotals: playerTotals, ranking: ranking, gameBoard: gameBoard, classBoard: classBoard,
+      ensurePlayer: ensurePlayer, deletePlayer: deletePlayer, renamePlayer: renamePlayer,
+      setPlayerClass: setPlayerClass, questionsForGrade: questionsForGrade, gradePlan: gradePlan,
+      exportScores: exportScores, importScores: importScores
+    },
+    start: startGame, answer: answer, next: nextQuestion
+  };
+})();
+</script>
+</body>
+</html>
