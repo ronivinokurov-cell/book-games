@@ -279,6 +279,23 @@ table.mini-table{width:100%}
 .podname{font-size:15.5px;font-weight:800;margin-top:6px}
 .podclass{font-size:12px;color:var(--muted);margin-top:2px}
 .podpts{font-size:19px;font-weight:800;color:var(--brand);margin-top:6px}
+
+/* ---------- ניסיונות והודעות ---------- */
+.book .foot .tries{
+  font-size:11px;font-weight:800;background:rgba(255,255,255,.9);color:#5c5346;
+  border-radius:99px;padding:2px 7px;white-space:nowrap
+}
+.book .foot .len{opacity:.78;font-size:11.5px;white-space:nowrap}
+.book.spent{filter:saturate(.35);opacity:.72}
+.book.spent .play{background:#efe9dd}
+.triesline{margin:10px 0 0;font-size:13px;color:var(--muted)}
+.toast{
+  position:fixed;left:50%;bottom:26px;transform:translate(-50%,20px);
+  background:#2c2620;color:#fff;padding:12px 18px;border-radius:14px;font-size:14px;
+  max-width:min(90vw,420px);text-align:center;line-height:1.5;box-shadow:0 10px 30px rgba(0,0,0,.25);
+  opacity:0;pointer-events:none;transition:opacity .2s, transform .2s;z-index:50
+}
+.toast.on{opacity:1;transform:translate(-50%,0)}
 </style>
 </head>
 <body>
@@ -360,8 +377,8 @@ table.mini-table{width:100%}
     </div>
     <p class="footnote">
       לכל ספר 8 שאלות, ומתוכן נבחרות שאלות לפי שכבת הכיתה: 5 שאלות בכיתות א'-ב', 6 בכיתות ג'-ד'
-      ו-8 בכיתות ה'-ו'. כל משחקון שווה עד 1000 נקודות, לפי אחוז התשובות הנכונות, כך שכל הכיתות
-      מתחרות באותו קנה מידה.
+      ו-8 בכיתות ה'-ו'. כל משחקון שווה עד 40 נקודות, ואפשר לשחק בכל משחקון פעמיים בלבד —
+      כך שכל התלמידים והכיתות מתחרים על אותם כללים.
     </p>
   </section>
 
@@ -402,6 +419,7 @@ table.mini-table{width:100%}
       <p class="sub" id="endWho"></p>
       <p class="recline" id="endRecord"></p>
       <p class="contrib" id="endContribution"></p>
+      <p class="triesline" id="endAttempts"></p>
       <div class="row">
         <button class="btn" id="againBtn">שחקו שוב</button>
         <button class="btn ghost" id="endHomeBtn">לכל המשחקונים</button>
@@ -875,17 +893,18 @@ var EXTRA_QUESTIONS = {
      ------------------------------------------------------------
      • כל תלמיד נרשם עם שם פרטי, שם משפחה וכיתה לפני שהוא משחק.
      • 20 כיתות (א'1 ... ו'4). כל נקודה נספרת לזכות הכיתה.
-     • כל משחקון שווה עד 1000 נקודות (לפי אחוז התשובות הנכונות),
-       כך שכל השכבות מתחרות באותו קנה מידה.
+     • כל משחקון שווה עד 40 נקודות (לפי אחוז התשובות הנכונות),
+       ואפשר לשחק בכל משחקון פעמיים בלבד.
      • אורך משחקון לפי שכבה: א'-ב' 5 שאלות, ג'-ד' 6, ה'-ו' 8
        (מתוך 8 שאלות לכל ספר).
      • לוח הכיתה מציג מי הביא כל נקודה, ושלושת התלמידים המובילים
        בכל כיתה ובבית הספר כולו מסומנים כזוכי פרס.
      ============================================================ */
 
-  var DB_KEY = 'booksGames.v5';
-  var LEGACY_KEYS = ['booksGames.v4', 'booksGames.v3', 'booksGames.v2'];
-  var MAX_PER_GAME = 1000;
+  var DB_KEY = 'booksGames.v6';
+  var LEGACY_KEYS = ['booksGames.v5', 'booksGames.v4', 'booksGames.v3', 'booksGames.v2'];
+  var MAX_PER_GAME = 40;
+  var MAX_ATTEMPTS = 2;
   var MAX_SCORES = 4000;
   var PRIZES = 3;
 
@@ -901,6 +920,15 @@ var EXTRA_QUESTIONS = {
     });
   }
   function $(id) { return document.getElementById(id); }
+  var toastTimer = null;
+  function toast(msg) {
+    var el = $('toast');
+    if (!el) return;
+    el.textContent = msg;
+    el.className = 'toast on';
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function () { el.className = 'toast'; }, 3600);
+  }
   function uid(p) { return (p || 'x') + Date.now().toString(36) + Math.random().toString(36).slice(2, 7); }
   function shuffle(a) {
     for (var i = a.length - 1; i > 0; i--) {
@@ -985,6 +1013,13 @@ var EXTRA_QUESTIONS = {
     migrateLegacy();
   }
 
+  function legacyScore(value, key) {
+    var v = value || 0;
+    // v5/v4 שמרו ניקוד בסקאלה של 1000; v3/v2 שמרו עד 750 למשחקון
+    var s1000 = (key === 'booksGames.v5' || key === 'booksGames.v4') ? v : v * 4 / 3;
+    return Math.max(0, Math.min(MAX_PER_GAME, Math.round(s1000 * MAX_PER_GAME / 1000)));
+  }
+
   function migrateLegacy() {
     var old = null, usedKey = null;
     for (var i = 0; i < LEGACY_KEYS.length; i++) {
@@ -1002,8 +1037,7 @@ var EXTRA_QUESTIONS = {
           return n;
         }).filter(Boolean);
         db.scores = (old.scores || []).map(function (r) {
-          var sc = usedKey === 'booksGames.v4' ? (r.s || 0) : Math.round((r.s || 0) * 4 / 3);
-          return { id: uid('s'), pid: r.pid, g: r.g, t: r.t || (bookById(r.g) || {}).title || r.g, s: Math.min(MAX_PER_GAME, Math.round(sc)), c: r.c || 0, n: r.n || 5, ts: r.ts || Date.now() };
+          return { id: uid('s'), pid: r.pid, g: r.g, t: r.t || (bookById(r.g) || {}).title || r.g, s: legacyScore(r.s, usedKey), c: r.c || 0, n: r.n || 5, ts: r.ts || Date.now() };
         });
         db.activeId = old.activeId || null;
         db.theme = old.theme === 'dark' ? 'dark' : 'light';
@@ -1017,7 +1051,7 @@ var EXTRA_QUESTIONS = {
           if (!st) { st = ensureStudent({ first: parts[0], last: parts.slice(1).join(' '), cls: null }, true); byKey[key] = st; }
           db.scores.push({
             id: uid('s'), pid: st.id, g: r.b, t: r.t || (bookById(r.b) || {}).title || r.b,
-            s: Math.min(MAX_PER_GAME, Math.round((r.s || 0) * 4 / 3)), c: r.c || 0, n: r.n || 5, ts: r.ts || Date.now()
+            s: legacyScore(r.s, usedKey), c: r.c || 0, n: r.n || 5, ts: r.ts || Date.now()
           });
         });
         db.theme = old.theme === 'dark' ? 'dark' : 'light';
@@ -1084,6 +1118,13 @@ var EXTRA_QUESTIONS = {
     return r;
   }
   function scoreFor(correct, total) { return total ? Math.round(MAX_PER_GAME * correct / total) : 0; }
+
+  function attemptsUsed(pid, g) {
+    var n = 0;
+    for (var i = 0; i < db.scores.length; i++) if (db.scores[i].pid === pid && db.scores[i].g === g) n++;
+    return n;
+  }
+  function attemptsLeft(pid, g) { return Math.max(0, MAX_ATTEMPTS - attemptsUsed(pid, g)); }
 
   function bestRecord(g, pid) {
     var best = null;
@@ -1278,15 +1319,18 @@ var EXTRA_QUESTIONS = {
       var b = BOOKS[k];
       var lib = ensureLibrary(b);
       var best = st ? bestScore(b.id, st.id) : null;
+      var used = st ? attemptsUsed(st.id, b.id) : 0;
+      var spent = used >= MAX_ATTEMPTS;
       var lenLabel = st && st.cls ? gradePlan(classGrade(st.cls)) + ' שאלות' : lib.length + ' שאלות';
-      html += '<button class="book" data-book="' + esc(b.id) + '" style="--h:' + (b.hue || 20) + '">' +
+      html += '<button class="book' + (spent ? ' spent' : '') + '" data-book="' + esc(b.id) + '" style="--h:' + (b.hue || 20) + '">' +
         '<div class="inner">' +
           '<div class="emoji">' + b.emoji + '</div>' +
           '<div class="title">' + esc(b.title) + '</div>' +
           '<div class="author">' + esc(b.author) + '</div>' +
           '<div class="foot">' +
-            (best !== null ? '<span class="done">✓ ' + best + '</span>' : '<span style="opacity:.75;font-size:12px">' + lenLabel + '</span>') +
-            '<span class="play">שחקו ←</span>' +
+            (best !== null ? '<span class="done">✓ ' + best + '</span>' : '<span class="len">' + lenLabel + '</span>') +
+            '<span class="tries">' + used + '/' + MAX_ATTEMPTS + '</span>' +
+            '<span class="play">' + (spent ? 'נוצל' : 'שחקו ←') + '</span>' +
           '</div>' +
         '</div>' +
         '<div class="cover-emoji">' + b.emoji + '</div>' +
@@ -1301,6 +1345,11 @@ var EXTRA_QUESTIONS = {
     var book = bookById(bookId);
     if (!book) return;
     var st = activeStudent();
+    if (attemptsLeft(st.id, book.id) <= 0) {
+      toast('במשחקון ' + book.title + ' ניצלתם את שני הניסיונות. בחרו ספר אחר.');
+      return;
+    }
+    var attemptNo = attemptsUsed(st.id, book.id) + 1;
     var qs = questionsForGrade(book, classGrade(st.cls)).map(function (q) {
       var opts = q.a.map(function (text, i) { return { text: text, ok: i === q.c }; });
       return { q: q.q, e: q.e, opts: shuffle(opts) };
@@ -1309,7 +1358,8 @@ var EXTRA_QUESTIONS = {
     game = { book: book, qs: qs, idx: 0, score: 0, correct: 0, streak: 0, bestStreak: 0, answered: false };
 
     $('gameTitle').textContent = book.emoji + ' ' + book.title;
-    $('gameAuthor').textContent = book.author + ' · ' + fullName(st) + ' · ' + classLabel(st.cls);
+    $('gameAuthor').textContent = book.author + ' · ' + fullName(st) + ' · כיתה ' + classLabel(st.cls) +
+      ' · ניסיון ' + attemptNo + ' מתוך ' + MAX_ATTEMPTS;
     show('screen-game');
     renderQuestion();
   }
@@ -1409,7 +1459,11 @@ var EXTRA_QUESTIONS = {
     $('endWho').textContent = fullName(st) + ' · כיתה ' + classLabel(st.cls) + ' · ' + total + ' שאלות · רצף שיא ' + game.bestStreak;
     $('endStars').textContent = stars;
     $('endScore').textContent = game.score;
-    $('endCorrect').textContent = 'עניתם נכון על ' + correct + ' מתוך ' + total + ' שאלות · מתוך 1000 נקודות';
+    $('endCorrect').textContent = 'עניתם נכון על ' + correct + ' מתוך ' + total + ' שאלות · מתוך ' + MAX_PER_GAME + ' נקודות למשחקון';
+    var used = attemptsUsed(st.id, game.book.id);
+    $('endAttempts').innerHTML = used >= MAX_ATTEMPTS
+      ? 'ניצלתם את שני הניסיונות במשחקון הזה — בחרו ספר אחר.'
+      : 'נותר לכם ניסיון אחד במשחקון הזה (ניסיון ' + used + ' מתוך ' + MAX_ATTEMPTS + ').';
 
     var recLine = '';
     if (prevBest === null || game.score > prevBest) {
@@ -1863,6 +1917,7 @@ var EXTRA_QUESTIONS = {
     state: function () { return { db: db, game: game }; },
     api: {
       addScore: addScore, bestScore: bestScore, bestRecord: bestRecord, scoreFor: scoreFor,
+      attemptsUsed: attemptsUsed, attemptsLeft: attemptsLeft, maxAttempts: MAX_ATTEMPTS, maxPerGame: MAX_PER_GAME,
       studentTotals: studentTotals, studentRows: studentRows, classBoard: classBoard, gameBoard: gameBoard,
       ensureStudent: ensureStudent, deleteStudent: deleteStudent, isRegistered: isRegistered,
       questionsForGrade: questionsForGrade, gradePlan: gradePlan, fullName: fullName,
@@ -1873,5 +1928,6 @@ var EXTRA_QUESTIONS = {
   };
 })();
 </script>
+<div id="toast" class="toast" role="status" aria-live="polite"></div>
 </body>
 </html>
