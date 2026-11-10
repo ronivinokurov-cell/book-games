@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>ספריית המשחקונים · 25 משחקונים על ספרים</title>
-<meta name="description" content="25 משחקונים על ספרים ליסודי, עם מערכת ניקוד ושמות שחקנים">
+<title>ספריית המשחקונים · משחק הספרים של בית הספר</title>
+<meta name="description" content="25 משחקונים על ספרים ליסודי, לפי 20 כיתות, עם ניקוד כיתתי ופרסים לתלמידים המובילים">
 <style>:root{
   --bg:#f6f3ea;
   --bg2:#efe9dc;
@@ -229,13 +229,104 @@ tr.me td{background:color-mix(in srgb,var(--brand) 7%,transparent)}
 .pfield.cls select{width:100%}
 select{max-width:100%}
 tr.dim td{opacity:.55}
+
+/* ---------- הרשמה ---------- */
+.topbtns{display:flex;gap:8px}
+.reg{padding:22px 20px}
+.reg h2{margin:0 0 6px;font-size:21px}
+.reg .sub{color:var(--muted);font-size:13.5px;line-height:1.6;margin:0 0 16px}
+.regrow{display:flex;gap:12px;flex-wrap:wrap}
+.regrow .pfield{flex:1 1 150px;min-width:0}
+.regrow .pfield.cls{flex:0 1 170px}
+.regrow input,.regrow select{width:100%;font-family:inherit;font-size:16px;padding:11px 12px;border-radius:12px;border:1px solid var(--line);background:var(--bg2);color:var(--text)}
+.regrow input:focus,.regrow select:focus{outline:2px solid var(--brand2);outline-offset:1px}
+.regerr{color:var(--bad);font-size:14px;min-height:20px;margin:10px 0 0}
+.regactions{margin-top:6px}
+.savedstudents{margin-top:18px;padding-top:14px;border-top:1px solid var(--line)}
+
+/* ---------- כרטיס תלמיד במסך הבית ---------- */
+.studentcard{padding:14px 16px;display:flex;gap:14px;align-items:center;flex-wrap:wrap;margin-bottom:6px}
+.sc-main{min-width:0;flex:1 1 200px}
+.sc-name{font-size:20px;font-weight:800;letter-spacing:-.3px}
+.sc-sub{font-size:13px;color:var(--muted);margin-top:3px}
+
+/* ---------- תרומה לכיתה ---------- */
+.contrib{margin:10px 0 0;font-size:14.5px;background:var(--bg2);border:1px solid var(--line);border-radius:12px;padding:10px 14px}
+.contrib b{color:var(--brand)}
+
+/* ---------- לוח כיתות: פירוט תלמידים ---------- */
+.clsrow{cursor:pointer}
+.clsrow:hover td{background:color-mix(in srgb,var(--brand) 6%,transparent)}
+.caret{color:var(--muted);font-size:12px}
+.detailrow td{background:var(--bg2);padding:0}
+.cdetail{padding:12px 10px 14px}
+.cd-head{font-size:13px;color:var(--muted);margin:2px 4px 8px;font-weight:600}
+.mini-table{font-size:13px}
+.mini-table th,.mini-table td{padding:7px 8px}
+table.mini-table{width:100%}
+
+/* ---------- פרסים ---------- */
+.prize td{background:color-mix(in srgb,var(--ok) 8%,transparent)}
+.prizechip{font-size:11px;font-weight:800;color:#7a5b00;background:linear-gradient(150deg,#f6d67a,#e0a13b);border-radius:999px;padding:2px 8px;white-space:nowrap}
+[data-theme="dark"] .prizechip{color:#2a1d00}
+.podium{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin:4px 0 16px}
+.pod{background:var(--card);border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow);padding:14px;text-align:center}
+.pod1{border-color:#e0a13b;box-shadow:0 8px 24px rgba(224,161,59,.28)}
+.pod2{border-color:#b9b9c6}
+.pod3{border-color:#c08a5a}
+.podmedal{font-size:30px;line-height:1}
+.podtitle{font-size:11.5px;color:var(--muted);margin-top:4px;font-weight:700}
+.podname{font-size:15.5px;font-weight:800;margin-top:6px}
+.podclass{font-size:12px;color:var(--muted);margin-top:2px}
+.podpts{font-size:19px;font-weight:800;color:var(--brand);margin-top:6px}
 </style>
 </head>
 <body>
 <div class="wrap">
 
+  <!-- ============ REGISTER ============ -->
+  <section id="screen-register" class="screen">
+    <div class="top">
+      <div class="logo">
+        <div class="mark">📚</div>
+        <div>
+          <h1>ספריית המשחקונים</h1>
+          <p>משחק הספרים של בית הספר · 25 משחקונים</p>
+        </div>
+      </div>
+      <button class="icon-btn themeBtn" title="מצב יום / לילה" aria-label="מצב יום או לילה">🌙</button>
+    </div>
+
+    <div class="panel reg">
+      <h2>כניסה למשחק</h2>
+      <p class="sub">כל תלמיד ממלא שם פרטי, שם משפחה ובוחר כיתה. כל נקודה שתשיגו נספרת לכיתה שלכם, ומי שצובר הכי הרבה נקודות זוכה בפרס.</p>
+      <div class="regrow">
+        <div class="pfield">
+          <label for="regFirst">שם פרטי</label>
+          <input id="regFirst" maxlength="14" autocomplete="off" placeholder="לדוגמה: נועה">
+        </div>
+        <div class="pfield">
+          <label for="regLast">שם משפחה</label>
+          <input id="regLast" maxlength="14" autocomplete="off" placeholder="לדוגמה: כהן">
+        </div>
+        <div class="pfield cls">
+          <label for="regClass">כיתה</label>
+          <select id="regClass"></select>
+        </div>
+      </div>
+      <p class="regerr" id="regError"></p>
+      <div class="regactions">
+        <button class="btn" id="regBtn">מתחילים לשחק ←</button>
+      </div>
+      <div class="savedstudents" id="savedStudentsWrap">
+        <div class="tools-title">תלמידים שכבר שיחקו במכשיר הזה — לחיצה ממשיכה מהמקום שלהם</div>
+        <div class="pchips" id="studentChips"></div>
+      </div>
+    </div>
+  </section>
+
   <!-- ============ HOME ============ -->
-  <section id="screen-home" class="screen on">
+  <section id="screen-home" class="screen">
     <div class="top">
       <div class="logo">
         <div class="mark">📚</div>
@@ -244,21 +335,16 @@ tr.dim td{opacity:.55}
           <p>25 משחקונים · 25 ספרים אהובים</p>
         </div>
       </div>
-      <button class="icon-btn" id="themeBtn" title="מצב יום / לילה" aria-label="מצב יום או לילה">🌙</button>
+      <div class="topbtns">
+        <button class="icon-btn" id="switchBtn" title="החלפת תלמיד" aria-label="החלפת תלמיד">👤</button>
+        <button class="icon-btn themeBtn" title="מצב יום / לילה" aria-label="מצב יום או לילה">🌙</button>
+      </div>
     </div>
 
-    <div class="panel player">
-      <div class="pfield">
-        <label for="playerName">שם השחקן / השחקנית</label>
-        <div class="pinput">
-          <input id="playerName" maxlength="16" placeholder="שם חדש או שם קיים" autocomplete="off">
-          <button class="mini" id="newPlayerBtn" title="שחקן חדש">＋ שחקן חדש</button>
-        </div>
-        <div class="pchips" id="playerChips"></div>
-      </div>
-      <div class="pfield cls">
-        <label for="classSel">כיתה</label>
-        <select id="classSel"></select>
+    <div class="panel studentcard">
+      <div class="sc-main">
+        <div class="sc-name" id="studentName">—</div>
+        <div class="sc-sub" id="studentSub">—</div>
       </div>
       <div class="stats" id="homeStats"></div>
     </div>
@@ -270,12 +356,12 @@ tr.dim td{opacity:.55}
     <div class="grid" id="bookGrid"></div>
 
     <div style="margin-top:22px;display:flex;gap:10px;flex-wrap:wrap">
-      <button class="btn" id="toScores">🏆 לוח ניקוד ותוצאות</button>
+      <button class="btn" id="toScores">🏆 לוח ניקוד, תלמידים ופרסים</button>
     </div>
     <p class="footnote">
       לכל ספר 8 שאלות, ומתוכן נבחרות שאלות לפי שכבת הכיתה: 5 שאלות בכיתות א'-ב', 6 בכיתות ג'-ד'
       ו-8 בכיתות ה'-ו'. כל משחקון שווה עד 1000 נקודות, לפי אחוז התשובות הנכונות, כך שכל הכיתות
-      מתחרות באותו קנה מידה. השמות, הכיתות והתוצאות נשמרים במכשיר הזה.
+      מתחרות באותו קנה מידה.
     </p>
   </section>
 
@@ -315,10 +401,11 @@ tr.dim td{opacity:.55}
       <p class="sub" id="endCorrect"></p>
       <p class="sub" id="endWho"></p>
       <p class="recline" id="endRecord"></p>
+      <p class="contrib" id="endContribution"></p>
       <div class="row">
         <button class="btn" id="againBtn">שחקו שוב</button>
         <button class="btn ghost" id="endHomeBtn">לכל המשחקונים</button>
-        <button class="btn ghost" id="endScoresBtn">לוח ניקוד</button>
+        <button class="btn ghost" id="endScoresBtn">לוח ניקוד ופרסים</button>
       </div>
     </div>
   </section>
@@ -329,22 +416,22 @@ tr.dim td{opacity:.55}
       <div class="logo">
         <div class="mark">🏆</div>
         <div>
-          <h1>לוח ניקוד ותוצאות</h1>
-          <p>כל 25 המשחקונים · כל השחקנים השמורים</p>
+          <h1>לוח ניקוד, תלמידים ופרסים</h1>
+          <p>כל 25 המשחקונים · 20 כיתות · כל התלמידים</p>
         </div>
       </div>
-      <button class="icon-btn" id="backHome2" title="חזרה">✕</button>
+      <button class="icon-btn" id="backHome2" title="חזרה" aria-label="חזרה">✕</button>
     </div>
 
     <div class="tabs">
       <button class="tab on" data-tab="classes">כיתות</button>
-      <button class="tab" data-tab="players">מובילים</button>
+      <button class="tab" data-tab="students">תלמידים ופרסים</button>
       <button class="tab" data-tab="records">שיאים לפי משחקון</button>
       <button class="tab" data-tab="results">כל התוצאות</button>
     </div>
 
     <div class="filters" id="filtersRow">
-      <select id="playerFilter"><option value="">כל השחקנים</option></select>
+      <select id="playerFilter"><option value="">כל התלמידים</option></select>
       <select id="classFilter"><option value="">כל הכיתות</option></select>
       <select id="bookFilter"><option value="">כל הספרים</option></select>
       <select id="sortSel">
@@ -355,6 +442,7 @@ tr.dim td{opacity:.55}
       <span class="chip" id="scoresCount"></span>
     </div>
 
+    <div id="podiumWrap"></div>
     <div class="panel" style="padding:6px 12px" id="scoresTable"></div>
     <div id="scoresMore"></div>
 
@@ -785,23 +873,26 @@ var EXTRA_QUESTIONS = {
   /* ============================================================
      ספריית המשחקונים · משחק בית ספרי לפי כיתות
      ------------------------------------------------------------
-     • 20 כיתות (א'1 ... ו'4). לכל שחקן שמור שם + כיתה.
+     • כל תלמיד נרשם עם שם פרטי, שם משפחה וכיתה לפני שהוא משחק.
+     • 20 כיתות (א'1 ... ו'4). כל נקודה נספרת לזכות הכיתה.
      • כל משחקון שווה עד 1000 נקודות (לפי אחוז התשובות הנכונות),
-       כך שכיתה א' וכיתה ו' מתחרות באותו קנה מידה.
-     • מספר השאלות במשחקון נקבע לפי שכבת הכיתה: א'-ב' 5,
-       ג'-ד' 6, ה'-ו' 8 (מתוך 8 שאלות לכל ספר).
-     • לוח הניקוד לא מחזיק רשימת משחקונים קשיחה: הוא נגזר
-       מ-BOOKS, ולכן משחקון חדש מתווסף אוטומטית.
+       כך שכל השכבות מתחרות באותו קנה מידה.
+     • אורך משחקון לפי שכבה: א'-ב' 5 שאלות, ג'-ד' 6, ה'-ו' 8
+       (מתוך 8 שאלות לכל ספר).
+     • לוח הכיתה מציג מי הביא כל נקודה, ושלושת התלמידים המובילים
+       בכל כיתה ובבית הספר כולו מסומנים כזוכי פרס.
      ============================================================ */
 
-  var DB_KEY = 'booksGames.v4';
-  var LEGACY_KEYS = ['booksGames.v3', 'booksGames.v2'];
+  var DB_KEY = 'booksGames.v5';
+  var LEGACY_KEYS = ['booksGames.v4', 'booksGames.v3', 'booksGames.v2'];
   var MAX_PER_GAME = 1000;
-  var MAX_SCORES = 3000;
+  var MAX_SCORES = 4000;
+  var PRIZES = 3;
 
-  var db = { players: [], activeId: null, scores: [], theme: 'light' };
+  var db = { students: [], activeId: null, scores: [], theme: 'light' };
   var game = null;
   var scoresTab = 'classes';
+  var expandedClasses = {};
 
   /* ---------------- עזרים ---------------- */
   function esc(s) {
@@ -818,7 +909,8 @@ var EXTRA_QUESTIONS = {
     }
     return a;
   }
-  function cleanName(s) { return String(s || '').replace(/\s+/g, ' ').trim().slice(0, 16); }
+  function clean(s) { return String(s || '').replace(/\s+/g, ' ').trim(); }
+  function cleanPart(s) { return clean(s).slice(0, 14); }
   function fmtDate(ts) {
     try {
       var d = new Date(ts);
@@ -833,11 +925,11 @@ var EXTRA_QUESTIONS = {
     for (var i = 0; i < CLASSES.length; i++) if (CLASSES[i].id === id) return CLASSES[i];
     return null;
   }
-  function classLabel(id) { var c = classById(id); return c ? c.label : '—'; }
+  function classLabel(id) { var c = classById(id); return c ? c.label : ''; }
   function classGrade(id) { var c = classById(id); return c ? c.grade : 0; }
   function gradePlan(grade) { return GRADE_PLAN[grade] || 5; }
 
-  /* ---------------- בניית ספרייה (8 שאלות לספר) ---------------- */
+  /* ---------------- ספרייה ---------------- */
   function ensureLibrary(b) {
     if (b.all) return b.all;
     var qs = (b.questions || []).map(function (q, idx) {
@@ -851,12 +943,6 @@ var EXTRA_QUESTIONS = {
     b.all = qs;
     return qs;
   }
-
-  function buildLibrary() {
-    for (var i = 0; i < BOOKS.length; i++) ensureLibrary(BOOKS[i]);
-  }
-
-  // בחירת השאלות למשחקון לפי שכבת הכיתה: הקלות קודם, ואז ערבוב סדר
   function questionsForGrade(book, grade) {
     var all = ensureLibrary(book);
     var n = Math.min(gradePlan(grade), all.length);
@@ -864,8 +950,21 @@ var EXTRA_QUESTIONS = {
     return shuffle(pool.slice(0, n));
   }
 
-  /* ---------------- אחסון והגירה ---------------- */
-  function emptyDb() { return { players: [], activeId: null, scores: [], theme: 'light' }; }
+  /* ---------------- אחסון ---------------- */
+  function emptyDb() { return { students: [], activeId: null, scores: [], theme: 'light' }; }
+
+  function normalizeStudent(raw) {
+    if (!raw) return null;
+    var first = cleanPart(raw.first || '');
+    var last = cleanPart(raw.last || '');
+    if (!first && raw.name) {
+      var parts = clean(raw.name).split(' ');
+      first = cleanPart(parts[0] || '');
+      last = cleanPart(parts.slice(1).join(' '));
+    }
+    if (!first) return null;
+    return { id: raw.id || uid('p'), first: first, last: last, cls: raw.cls || null, ts: raw.ts || Date.now() };
+  }
 
   function loadDb() {
     db = emptyDb();
@@ -874,18 +973,18 @@ var EXTRA_QUESTIONS = {
     if (raw) {
       try {
         var p = JSON.parse(raw) || {};
-        db.players = Array.isArray(p.players) ? p.players.filter(function (x) { return x && x.id && x.name; }) : [];
+        var list = p.students || p.players || [];
+        db.students = (Array.isArray(list) ? list : []).map(normalizeStudent).filter(Boolean);
         db.scores = Array.isArray(p.scores) ? p.scores.filter(function (x) { return x && x.g && typeof x.s === 'number'; }) : [];
         db.activeId = p.activeId || null;
         db.theme = p.theme === 'dark' ? 'dark' : 'light';
       } catch (e) { db = emptyDb(); }
-      if (!playerById(db.activeId) && db.players.length) db.activeId = db.players[0].id;
+      if (!studentById(db.activeId) && db.students.length) db.activeId = db.students[0].id;
       return;
     }
     migrateLegacy();
   }
 
-  // העברת נתונים מגרסאות קודמות: מוסיפים כיתה (ריקה) ומעלים את הניקוד לסקאלה של 1000
   function migrateLegacy() {
     var old = null, usedKey = null;
     for (var i = 0; i < LEGACY_KEYS.length; i++) {
@@ -896,28 +995,34 @@ var EXTRA_QUESTIONS = {
     }
     if (!old) return;
     try {
-      if (usedKey === 'booksGames.v3' && Array.isArray(old.players)) {
-        db.players = old.players.map(function (p) { return { id: p.id, name: p.name, cls: p.cls || null, ts: p.ts || Date.now() }; });
+      var list = old.students || old.players || [];
+      if (Array.isArray(list) && list.length) {
+        db.students = list.map(function (p) {
+          var n = normalizeStudent(p);
+          return n;
+        }).filter(Boolean);
         db.scores = (old.scores || []).map(function (r) {
-          return { id: uid('s'), pid: r.pid, g: r.g, t: r.t || (bookById(r.g) || {}).title || r.g, s: Math.min(MAX_PER_GAME, Math.round((r.s || 0) * 4 / 3)), c: r.c || 0, n: r.n || 5, ts: r.ts || Date.now() };
+          var sc = usedKey === 'booksGames.v4' ? (r.s || 0) : Math.round((r.s || 0) * 4 / 3);
+          return { id: uid('s'), pid: r.pid, g: r.g, t: r.t || (bookById(r.g) || {}).title || r.g, s: Math.min(MAX_PER_GAME, Math.round(sc)), c: r.c || 0, n: r.n || 5, ts: r.ts || Date.now() };
         });
         db.activeId = old.activeId || null;
         db.theme = old.theme === 'dark' ? 'dark' : 'light';
       } else if (Array.isArray(old.records)) {
-        var byName = {};
+        var byKey = {};
         (old.records || []).forEach(function (r) {
-          var nm = cleanName(r.p) || 'אורח';
-          var pl = byName[nm];
-          if (!pl) { pl = ensurePlayer(nm, true); byName[nm] = pl; }
+          var nm = clean(r.p) || 'אורח';
+          var parts = nm.split(' ');
+          var key = nm + '|';
+          var st = byKey[key];
+          if (!st) { st = ensureStudent({ first: parts[0], last: parts.slice(1).join(' '), cls: null }, true); byKey[key] = st; }
           db.scores.push({
-            id: uid('s'), pid: pl.id, g: r.b, t: r.t || (bookById(r.b) || {}).title || r.b,
+            id: uid('s'), pid: st.id, g: r.b, t: r.t || (bookById(r.b) || {}).title || r.b,
             s: Math.min(MAX_PER_GAME, Math.round((r.s || 0) * 4 / 3)), c: r.c || 0, n: r.n || 5, ts: r.ts || Date.now()
           });
         });
-        if (cleanName(old.player)) ensurePlayer(old.player, true);
         db.theme = old.theme === 'dark' ? 'dark' : 'light';
       }
-      if (!playerById(db.activeId) && db.players.length) db.activeId = db.players[0].id;
+      if (!studentById(db.activeId) && db.students.length) db.activeId = db.students[0].id;
       saveDb();
     } catch (e) {}
   }
@@ -926,63 +1031,53 @@ var EXTRA_QUESTIONS = {
     try { localStorage.setItem(DB_KEY, JSON.stringify(db)); } catch (e) {}
   }
 
-  /* ---------------- שחקנים ---------------- */
-  function playerById(id) {
+  /* ---------------- תלמידים ---------------- */
+  function fullName(p) {
+    if (!p) return '';
+    return clean((p.first || '') + ' ' + (p.last || '')) || '—';
+  }
+  function studentById(id) {
     if (!id) return null;
-    for (var i = 0; i < db.players.length; i++) if (db.players[i].id === id) return db.players[i];
+    for (var i = 0; i < db.students.length; i++) if (db.students[i].id === id) return db.students[i];
     return null;
   }
-  function playerByName(name) {
-    var n = cleanName(name).toLowerCase();
-    if (!n) return null;
-    for (var i = 0; i < db.players.length; i++) {
-      if (String(db.players[i].name).toLowerCase() === n) return db.players[i];
+  function findStudent(first, last, cls) {
+    var f = cleanPart(first).toLowerCase(), l = cleanPart(last).toLowerCase();
+    for (var i = 0; i < db.students.length; i++) {
+      var s = db.students[i];
+      if (cleanPart(s.first).toLowerCase() === f && cleanPart(s.last).toLowerCase() === l && (s.cls || null) === (cls || null)) return s;
     }
     return null;
   }
-  function ensurePlayer(name, silent) {
-    var n = cleanName(name);
-    if (!n) return playerById(db.activeId);
-    var found = playerByName(n);
+  function ensureStudent(data, silent) {
+    var first = cleanPart(data.first), last = cleanPart(data.last), cls = data.cls || null;
+    if (!first) return null;
+    var found = findStudent(first, last, cls);
     if (found) { if (!silent) { db.activeId = found.id; saveDb(); } return found; }
-    var pl = { id: uid('p'), name: n, cls: $('classSel') ? ($('classSel').value || null) : null, ts: Date.now() };
-    db.players.push(pl);
-    db.activeId = pl.id;
+    var st = { id: uid('p'), first: first, last: last, cls: cls, ts: Date.now() };
+    db.students.push(st);
+    if (!silent) db.activeId = st.id;
     saveDb();
-    return pl;
+    return st;
   }
-  function activePlayer() {
-    var pl = playerById(db.activeId);
-    if (!pl && db.players.length) { pl = db.players[0]; db.activeId = pl.id; }
-    return pl || null;
+  function activeStudent() {
+    var st = studentById(db.activeId);
+    if (!st && db.students.length) { st = db.students[0]; db.activeId = st.id; }
+    return st || null;
   }
-  function activeName() { var p = activePlayer(); return p ? p.name : 'אורח'; }
-  function setPlayerClass(pid, clsId) {
-    var pl = playerById(pid);
-    if (!pl) return;
-    pl.cls = clsId || null;
-    saveDb();
-  }
-  function renamePlayer(id, name) {
-    var pl = playerById(id); var n = cleanName(name);
-    if (!pl || !n) return false;
-    var other = playerByName(n);
-    if (other && other.id !== id) return false;
-    pl.name = n; saveDb(); return true;
-  }
-  function deletePlayer(id) {
-    db.players = db.players.filter(function (p) { return p.id !== id; });
+  function isRegistered(st) { return !!(st && st.first && st.last && st.cls); }
+  function activeRegistered() { return isRegistered(activeStudent()); }
+
+  function deleteStudent(id) {
+    db.students = db.students.filter(function (s) { return s.id !== id; });
     db.scores = db.scores.filter(function (s) { return s.pid !== id; });
-    if (db.activeId === id) db.activeId = db.players.length ? db.players[0].id : null;
+    if (db.activeId === id) db.activeId = db.students.length ? db.students[0].id : null;
     saveDb();
   }
 
-  /* ---------------- מנוע הניקוד ---------------- */
+  /* ---------------- ניקוד ---------------- */
   function addScore(rec) {
-    var r = {
-      id: uid('s'), pid: rec.pid, g: rec.g, t: rec.t,
-      s: rec.s, c: rec.c, n: rec.n, cls: rec.cls || null, ts: Date.now()
-    };
+    var r = { id: uid('s'), pid: rec.pid, g: rec.g, t: rec.t, s: rec.s, c: rec.c, n: rec.n, cls: rec.cls || null, ts: Date.now() };
     db.scores.push(r);
     if (db.scores.length > MAX_SCORES) db.scores = db.scores.slice(-MAX_SCORES);
     saveDb();
@@ -1002,7 +1097,7 @@ var EXTRA_QUESTIONS = {
   }
   function bestScore(g, pid) { var r = bestRecord(g, pid); return r ? r.s : null; }
 
-  function playerTotals(pid) {
+  function studentTotals(pid) {
     var total = 0, games = 0, best = 0, accSum = 0, books = {}, last = 0;
     for (var i = 0; i < db.scores.length; i++) {
       var r = db.scores[i];
@@ -1013,40 +1108,27 @@ var EXTRA_QUESTIONS = {
       books[r.g] = 1;
       if (r.ts > last) last = r.ts;
     }
-    return {
-      total: total, games: games, best: best, books: Object.keys(books).length,
-      acc: games ? Math.round(accSum / games * 100) : 0, last: last
-    };
+    return { total: total, games: games, best: best, books: Object.keys(books).length, acc: games ? Math.round(accSum / games * 100) : 0, last: last };
   }
 
-  function ranking() {
-    return db.players.map(function (p) {
-      var t = playerTotals(p.id);
-      return { id: p.id, name: p.name, cls: p.cls, total: t.total, games: t.games, best: t.best, acc: t.acc, books: t.books, last: t.last };
-    }).sort(function (a, b) { return b.total - a.total || b.best - a.best || b.games - a.games; });
+  // טבלת התלמידים: כל תלמיד עם הנקודות שלו לכיתה
+  function studentRows(classFilter) {
+    var rows = [];
+    for (var i = 0; i < db.students.length; i++) {
+      var s = db.students[i];
+      if (classFilter && s.cls !== classFilter) continue;
+      var t = studentTotals(s.id);
+      rows.push({ id: s.id, first: s.first, last: s.last, name: fullName(s), cls: s.cls, total: t.total, games: t.games, best: t.best, acc: t.acc, books: t.books, last: t.last });
+    }
+    rows.sort(function (a, b) { return b.total - a.total || b.best - a.best || b.games - a.games || a.name.localeCompare(b.name); });
+    return rows;
   }
 
-  function gameBoard() {
-    return BOOKS.map(function (b) {
-      var lib = ensureLibrary(b);
-      var rec = bestRecord(b.id, null);
-      var plays = 0;
-      for (var i = 0; i < db.scores.length; i++) if (db.scores[i].g === b.id) plays++;
-      var holder = rec ? playerById(rec.pid) : null;
-      return {
-        id: b.id, title: b.title, author: b.author, emoji: b.emoji, questions: lib.length,
-        best: rec ? rec.s : null, holder: holder ? holder.name : '', holderClass: holder ? classLabel(holder.cls) : '',
-        correct: rec ? rec.c : null, total: rec ? rec.n : null, plays: plays
-      };
-    });
-  }
-
-  /* לוח הכיתות: ניקוד כולל, ממוצע לתלמיד, שחקנים, משחקונים וספרים */
   function classBoard() {
     var rows = CLASSES.map(function (c) {
-      var ids = [], playersCount = 0;
-      for (var i = 0; i < db.players.length; i++) {
-        if (db.players[i].cls === c.id) { ids.push(db.players[i].id); playersCount++; }
+      var ids = [], count = 0;
+      for (var i = 0; i < db.students.length; i++) {
+        if (db.students[i].cls === c.id) { ids.push(db.students[i].id); count++; }
       }
       var total = 0, games = 0, best = 0, accSum = 0, books = {};
       for (var k = 0; k < db.scores.length; k++) {
@@ -1058,17 +1140,31 @@ var EXTRA_QUESTIONS = {
         books[r.g] = 1;
       }
       return {
-        id: c.id, label: c.label, grade: c.grade, players: playersCount,
+        id: c.id, label: c.label, grade: c.grade, students: count,
         total: total, games: games, best: best,
-        avg: playersCount ? Math.round(total / playersCount) : 0,
+        avg: count ? Math.round(total / count) : 0,
         acc: games ? Math.round(accSum / games * 100) : 0,
         books: Object.keys(books).length
       };
     });
-    rows.sort(function (a, b) {
-      return b.avg - a.avg || b.total - a.total || b.players - a.players;
-    });
+    rows.sort(function (a, b) { return b.avg - a.avg || b.total - a.total || b.students - a.students; });
     return rows;
+  }
+
+  function gameBoard() {
+    return BOOKS.map(function (b) {
+      var lib = ensureLibrary(b);
+      var rec = bestRecord(b.id, null);
+      var plays = 0;
+      for (var i = 0; i < db.scores.length; i++) if (db.scores[i].g === b.id) plays++;
+      var holder = rec ? studentById(rec.pid) : null;
+      return {
+        id: b.id, title: b.title, author: b.author, emoji: b.emoji, questions: lib.length,
+        best: rec ? rec.s : null, holder: holder ? fullName(holder) : '',
+        holderClass: holder ? classLabel(holder.cls) : '',
+        correct: rec ? rec.c : null, total: rec ? rec.n : null, plays: plays
+      };
+    });
   }
 
   /* ---------------- מסכים ---------------- */
@@ -1080,12 +1176,11 @@ var EXTRA_QUESTIONS = {
   }
   function applyTheme() {
     document.documentElement.setAttribute('data-theme', db.theme);
-    $('themeBtn').textContent = db.theme === 'dark' ? '☀️' : '🌙';
+    var btns = document.querySelectorAll('.themeBtn');
+    for (var i = 0; i < btns.length; i++) btns[i].textContent = db.theme === 'dark' ? '☀️' : '🌙';
   }
 
-  /* ---------------- כיתות בשדה הבחירה ---------------- */
-  function fillClassSelect() {
-    var sel = $('classSel');
+  function fillClassSelect(sel) {
     if (sel.options.length) return;
     var first = document.createElement('option');
     first.value = ''; first.textContent = 'בחרו כיתה';
@@ -1105,51 +1200,75 @@ var EXTRA_QUESTIONS = {
     }
   }
 
-  /* ---------------- מסך הבית ---------------- */
-  function renderPlayerBar() {
-    var pl = activePlayer();
-    var input = $('playerName');
-    if (document.activeElement !== input) input.value = pl ? pl.name : '';
-    var csel = $('classSel');
-    if (document.activeElement !== csel) csel.value = pl && pl.cls ? pl.cls : '';
-
-    var t = pl ? playerTotals(pl.id) : { total: 0, games: 0, books: 0 };
-    var grade = pl && pl.cls ? classGrade(pl.cls) : 0;
-    $('homeStats').innerHTML =
-      '<span class="chip">ניקוד כולל <b>' + t.total + '</b></span>' +
-      '<span class="chip">משחקונים <b>' + t.games + '</b></span>' +
-      '<span class="chip">ספרים <b>' + t.books + '/' + BOOKS.length + '</b></span>' +
-      '<span class="chip">' + (grade ? 'במשחקון: <b>' + gradePlan(grade) + '</b> שאלות' : 'בחרו כיתה כדי לקבוע אורך משחקון') + '</span>';
+  /* ---------------- הרשמה ---------------- */
+  function renderRegister(prefill) {
+    var st = activeStudent();
+    $('regFirst').value = prefill ? '' : (st ? st.first || '' : '');
+    $('regLast').value = prefill ? '' : (st ? st.last || '' : '');
+    $('regClass').value = st && st.cls ? st.cls : '';
+    $('regError').textContent = '';
 
     var chips = '';
-    if (!db.players.length) {
-      chips = '<span class="chip ghostchip">עוד לא נשמרו שמות — כתבו שם למעלה והוא יישמר</span>';
-    } else {
-      for (var i = 0; i < db.players.length; i++) {
-        var p = db.players[i];
-        var pt = playerTotals(p.id);
-        chips += '<button class="pchip' + (pl && p.id === pl.id ? ' on' : '') + '" data-pid="' + esc(p.id) + '">' +
-          esc(p.name) + (p.cls ? ' · ' + esc(classLabel(p.cls)) : '') + ' <b>' + pt.total + '</b></button>';
-      }
+    var withScores = db.students.slice().sort(function (a, b) {
+      return studentTotals(b.id).total - studentTotals(a.id).total;
+    });
+    for (var i = 0; i < withScores.length; i++) {
+      var s = withScores[i];
+      var t = studentTotals(s.id);
+      chips += '<button class="pchip" data-sid="' + esc(s.id) + '">' +
+        esc(fullName(s)) + (s.cls ? ' · ' + esc(classLabel(s.cls)) : '') + ' <b>' + t.total + '</b></button>';
     }
-    $('playerChips').innerHTML = chips;
+    $('studentChips').innerHTML = chips || '<span class="chip ghostchip">עוד לא נרשמו תלמידים במכשיר הזה</span>';
+    $('savedStudentsWrap').style.display = db.students.length ? 'block' : 'none';
 
-    var books = 0;
-    if (pl) books = playerTotals(pl.id).books;
-    $('progressTxt').textContent = 'הושלמו ' + books + ' מתוך ' + BOOKS.length + ' ספרים';
+    show('screen-register');
+  }
+
+  function submitRegistration() {
+    var first = cleanPart($('regFirst').value);
+    var last = cleanPart($('regLast').value);
+    var cls = $('regClass').value || '';
+    var err = $('regError');
+
+    if (!first) { err.textContent = 'צריך למלא שם פרטי.'; $('regFirst').focus(); return; }
+    if (!last) { err.textContent = 'צריך למלא שם משפחה.'; $('regLast').focus(); return; }
+    if (!cls) { err.textContent = 'צריך לבחור כיתה מהרשימה.'; $('regClass').focus(); return; }
+
+    var st = ensureStudent({ first: first, last: last, cls: cls });
+    if (!st) { err.textContent = 'משהו לא תקין בשם, נסו שוב.'; return; }
+    db.activeId = st.id;
+    saveDb();
+    renderHome();
+    show('screen-home');
+  }
+
+  /* ---------------- מסך הבית ---------------- */
+  function renderStudentCard() {
+    var st = activeStudent();
+    $('studentName').textContent = st ? fullName(st) : '—';
+    $('studentSub').textContent = st && st.cls
+      ? 'כיתה ' + classLabel(st.cls) + ' · ' + gradePlan(classGrade(st.cls)) + ' שאלות בכל משחקון'
+      : 'עדיין לא נבחרה כיתה';
+
+    var t = st ? studentTotals(st.id) : { total: 0, games: 0, books: 0 };
+    var clsRow = st && st.cls ? classBoard().filter(function (c) { return c.id === st.cls; })[0] : null;
+    $('homeStats').innerHTML =
+      '<span class="chip">ניקוד אישי <b>' + t.total + '</b></span>' +
+      '<span class="chip">משחקונים <b>' + t.games + '</b></span>' +
+      '<span class="chip">ספרים <b>' + t.books + '/' + BOOKS.length + '</b></span>' +
+      (clsRow ? '<span class="chip">נקודות לכיתה ' + esc(clsRow.label) + ' <b>' + clsRow.total + '</b></span>' : '');
+    $('progressTxt').textContent = 'הושלמו ' + t.books + ' מתוך ' + BOOKS.length + ' ספרים';
   }
 
   function renderHome() {
-    renderPlayerBar();
-    var pl = activePlayer();
-    var myGrade = pl && pl.cls ? classGrade(pl.cls) : 0;
-    var myLen = myGrade ? gradePlan(myGrade) : 0;
+    renderStudentCard();
+    var st = activeStudent();
     var html = '';
     for (var k = 0; k < BOOKS.length; k++) {
       var b = BOOKS[k];
-      ensureLibrary(b);
-      var best = pl ? bestScore(b.id, pl.id) : null;
-      var lenLabel = myLen ? myLen + ' שאלות' : b.all.length + ' שאלות';
+      var lib = ensureLibrary(b);
+      var best = st ? bestScore(b.id, st.id) : null;
+      var lenLabel = st && st.cls ? gradePlan(classGrade(st.cls)) + ' שאלות' : lib.length + ' שאלות';
       html += '<button class="book" data-book="' + esc(b.id) + '" style="--h:' + (b.hue || 20) + '">' +
         '<div class="inner">' +
           '<div class="emoji">' + b.emoji + '</div>' +
@@ -1166,20 +1285,13 @@ var EXTRA_QUESTIONS = {
     $('bookGrid').innerHTML = html;
   }
 
-  function selectPlayer(id) {
-    if (!playerById(id)) return;
-    db.activeId = id; saveDb(); renderHome(); renderScores();
-  }
-
   /* ---------------- משחק ---------------- */
   function startGame(bookId) {
+    if (!activeRegistered()) { renderRegister(); return; }
     var book = bookById(bookId);
     if (!book) return;
-    if (!activePlayer()) ensurePlayer(cleanName($('playerName').value) || 'אורח');
-    var pl = activePlayer();
-    var grade = pl && pl.cls ? classGrade(pl.cls) : 0;
-
-    var qs = questionsForGrade(book, grade).map(function (q) {
+    var st = activeStudent();
+    var qs = questionsForGrade(book, classGrade(st.cls)).map(function (q) {
       var opts = q.a.map(function (text, i) { return { text: text, ok: i === q.c }; });
       return { q: q.q, e: q.e, opts: shuffle(opts) };
     });
@@ -1187,7 +1299,7 @@ var EXTRA_QUESTIONS = {
     game = { book: book, qs: qs, idx: 0, score: 0, correct: 0, streak: 0, bestStreak: 0, answered: false };
 
     $('gameTitle').textContent = book.emoji + ' ' + book.title;
-    $('gameAuthor').textContent = book.author + ' · ' + activeName() + (pl && pl.cls ? ' · ' + classLabel(pl.cls) : '');
+    $('gameAuthor').textContent = book.author + ' · ' + fullName(st) + ' · ' + classLabel(st.cls);
     show('screen-game');
     renderQuestion();
   }
@@ -1206,8 +1318,7 @@ var EXTRA_QUESTIONS = {
 
     var html = '';
     for (var i = 0; i < q.opts.length; i++) {
-      html += '<button class="opt" data-i="' + i + '"><span class="k">' + (i + 1) + '</span><span>' +
-        esc(q.opts[i].text) + '</span></button>';
+      html += '<button class="opt" data-i="' + i + '"><span class="k">' + (i + 1) + '</span><span>' + esc(q.opts[i].text) + '</span></button>';
     }
     $('qOpts').innerHTML = html;
     var fb = $('qFb');
@@ -1238,9 +1349,8 @@ var EXTRA_QUESTIONS = {
       game.streak++;
       if (game.streak > game.bestStreak) game.bestStreak = game.streak;
       game.score = scoreFor(game.correct, game.qs.length);
-      var gain = game.score - before;
       fb.className = 'fb on good';
-      fb.innerHTML = '<b>נכון! +' + gain + ' נקודות' + (game.streak > 2 ? ' · רצף ' + game.streak + ' 🔥' : '') + '</b>' + esc(q.e || '');
+      fb.innerHTML = '<b>נכון! +' + (game.score - before) + ' נקודות' + (game.streak > 2 ? ' · רצף ' + game.streak + ' 🔥' : '') + '</b>' + esc(q.e || '');
     } else {
       game.streak = 0;
       fb.className = 'fb on wrong';
@@ -1262,13 +1372,15 @@ var EXTRA_QUESTIONS = {
   }
 
   function finishGame() {
-    var pl = activePlayer() || ensurePlayer('אורח');
+    var st = activeStudent();
+    if (!isRegistered(st)) { renderRegister(); return; }
     var total = game.qs.length;
     var correct = game.correct;
-    var prevBest = bestScore(game.book.id, pl.id);
+    var prevBest = bestScore(game.book.id, st.id);
 
-    addScore({ pid: pl.id, g: game.book.id, t: game.book.title, s: game.score, c: correct, n: total, cls: pl.cls });
-    var afterBest = bestScore(game.book.id, pl.id);
+    addScore({ pid: st.id, g: game.book.id, t: game.book.title, s: game.score, c: correct, n: total, cls: st.cls });
+    var afterBest = bestScore(game.book.id, st.id);
+    var clsRow = classBoard().filter(function (c) { return c.id === st.cls; })[0];
 
     var pct = correct / total;
     var title, emoji;
@@ -1284,21 +1396,24 @@ var EXTRA_QUESTIONS = {
     $('endEmoji').textContent = emoji;
     $('endTitle').textContent = title;
     $('endBook').textContent = game.book.emoji + ' ' + game.book.title + ' · ' + game.book.author;
-    $('endWho').textContent = pl.name + (pl.cls ? ' · כיתה ' + classLabel(pl.cls) : ' · בלי כיתה') +
-      ' · ' + total + ' שאלות · רצף שיא ' + game.bestStreak;
+    $('endWho').textContent = fullName(st) + ' · כיתה ' + classLabel(st.cls) + ' · ' + total + ' שאלות · רצף שיא ' + game.bestStreak;
     $('endStars').textContent = stars;
     $('endScore').textContent = game.score;
     $('endCorrect').textContent = 'עניתם נכון על ' + correct + ' מתוך ' + total + ' שאלות · מתוך 1000 נקודות';
 
     var recLine = '';
-    var isRecord = prevBest === null || game.score > prevBest;
-    if (isRecord) {
-      recLine = '<span class="rec">🎉 שיא חדש ל' + esc(pl.name) + ' במשחקון הזה!</span>';
+    if (prevBest === null || game.score > prevBest) {
+      recLine = '<span class="rec">🎉 שיא חדש ל' + esc(fullName(st)) + ' במשחקון הזה!</span>';
       if (prevBest !== null) recLine += '<span class="sub"> השיא הקודם: ' + prevBest + '</span>';
     } else {
       recLine = '<span class="sub">השיא שלך במשחקון הזה: <b>' + afterBest + '</b></span>';
     }
     $('endRecord').innerHTML = recLine;
+
+    var personal = studentTotals(st.id).total;
+    $('endContribution').innerHTML = 'הבאת <b>' + game.score + '</b> נקודות לכיתה ' + esc(classLabel(st.cls)) +
+      ' · סך נקודות הכיתה: <b>' + (clsRow ? clsRow.total : 0) + '</b>' +
+      '<br><span class="sub">הניקוד האישי שלך: ' + personal + ' נקודות</span>';
 
     show('screen-end');
     renderHome();
@@ -1321,7 +1436,7 @@ var EXTRA_QUESTIONS = {
     var pf = $('playerFilter'), cf = $('classFilter'), bf = $('bookFilter');
     var pfVal = pf.value, cfVal = cf.value, bfVal = bf.value;
 
-    fillSelect(pf, db.players.map(function (p) { return { value: p.id, label: p.name + (p.cls ? ' (' + classLabel(p.cls) + ')' : '') }; }), 1, pfVal);
+    fillSelect(pf, db.students.map(function (s) { return { value: s.id, label: fullName(s) + (s.cls ? ' (' + classLabel(s.cls) + ')' : '') }; }), 1, pfVal);
     fillSelect(cf, CLASSES.map(function (c) { return { value: c.id, label: 'כיתה ' + c.label }; }), 1, cfVal);
     fillSelect(bf, BOOKS.map(function (b) { return { value: b.id, label: b.title }; }), 1, bfVal);
 
@@ -1330,81 +1445,133 @@ var EXTRA_QUESTIONS = {
     var isResults = scoresTab === 'results';
     $('filtersRow').style.display = isResults ? 'flex' : 'none';
     $('sortSel').style.display = isResults ? 'inline-block' : 'none';
+    $('podiumWrap').innerHTML = '';
 
     if (scoresTab === 'classes') renderClassesTab();
-    else if (scoresTab === 'players') renderPlayersTab();
+    else if (scoresTab === 'students') renderStudentsTab();
     else if (scoresTab === 'records') renderRecordsTab();
     else renderResultsTab();
 
-    $('exportNote').textContent = 'שמורים ' + db.scores.length + ' תוצאות של ' + db.players.length +
-      ' שחקנים מ-' + activeClassCount() + ' כיתות. הייצוא שומר קובץ JSON שאפשר לייבא במכשיר אחר.';
+    $('exportNote').textContent = 'שמורים ' + db.scores.length + ' תוצאות של ' + db.students.length +
+      ' תלמידים מ-' + activeClassCount() + ' כיתות. הייצוא שומר קובץ JSON שאפשר לייבא במכשיר אחר.';
   }
 
   function activeClassCount() {
     var seen = {};
-    for (var i = 0; i < db.players.length; i++) if (db.players[i].cls) seen[db.players[i].cls] = 1;
+    for (var i = 0; i < db.students.length; i++) if (db.students[i].cls) seen[db.students[i].cls] = 1;
     return Object.keys(seen).length;
   }
 
   function renderClassesTab() {
     var rows = classBoard();
-    var playing = rows.filter(function (r) { return r.players > 0; }).length;
-    $('scoresCount').innerHTML = '<b>' + playing + '/' + CLASSES.length + '</b> כיתות עם תוצאות';
+    var playing = rows.filter(function (r) { return r.students > 0; }).length;
+    $('scoresCount').innerHTML = '<b>' + playing + '/' + CLASSES.length + '</b> כיתות עם תלמידים';
+
     var html = '<div class="tblwrap"><table><thead><tr>' +
       '<th class="rank">#</th><th>כיתה</th><th>ניקוד כולל</th><th>ממוצע לתלמיד</th><th>תלמידים</th><th>משחקונים</th><th>ספרים</th><th>דיוק</th>' +
       '</tr></thead><tbody>';
+
     for (var i = 0; i < rows.length; i++) {
       var r = rows[i];
-      var medal = r.players === 0 ? (i + 1) : (i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : (i + 1));
-      html += '<tr' + (r.players ? '' : ' class="dim"') + '>' +
+      var medal = r.students === 0 ? (i + 1) : (i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : (i + 1));
+      var open = !!expandedClasses[r.id];
+      html += '<tr class="clsrow' + (r.students ? '' : ' dim') + (open ? ' open' : '') + '" data-class="' + esc(r.id) + '">' +
         '<td class="rank">' + medal + '</td>' +
-        '<td><b>כיתה ' + esc(r.label) + '</b></td>' +
+        '<td><b>כיתה ' + esc(r.label) + '</b>' + (r.students ? ' <span class="caret">' + (open ? '▾' : '▸') + '</span>' : '') + '</td>' +
         '<td class="num" style="color:var(--brand)">' + r.total + '</td>' +
-        '<td class="num">' + (r.players ? r.avg : '—') + '</td>' +
-        '<td>' + r.players + '</td>' +
+        '<td class="num">' + (r.students ? r.avg : '—') + '</td>' +
+        '<td>' + r.students + '</td>' +
         '<td>' + r.games + '</td>' +
         '<td>' + r.books + '/' + BOOKS.length + '</td>' +
-        '<td>' + (r.players ? r.acc + '%' : '—') + '</td>' +
+        '<td>' + (r.students ? r.acc + '%' : '—') + '</td>' +
       '</tr>';
+
+      if (open) {
+        html += '<tr class="detailrow"><td colspan="8">' + classDetailHtml(r) + '</td></tr>';
+      }
     }
     html += '</tbody></table></div>';
     $('scoresTable').innerHTML = html;
-    $('scoresMore').innerHTML = '<p class="footnote">הדירוג לפי ממוצע נקודות לתלמיד, כדי שכיתה עם פחות תלמידים לא תיענש. ' +
-      'כל משחקון שווה עד 1000 נקודות לכל הכיתות.</p>';
+    $('scoresMore').innerHTML = '<p class="footnote">לוחצים על שורת כיתה כדי לראות מי מביא כל נקודה. ' +
+      'הדירוג לפי ממוצע נקודות לתלמיד, ושלושת המובילים בכל כיתה מסומנים 🥇🥈🥉.</p>';
   }
 
-  function renderPlayersTab() {
-    $('scoresCount').innerHTML = '<b>' + db.players.length + '</b> שחקנים';
-    var rows = ranking();
+  function classDetailHtml(clsRow) {
+    var list = studentRows(clsRow.id);
+    if (!list.length) return '<div class="cdetail empty">אין עדיין תלמידים רשומים בכיתה ' + esc(clsRow.label) + '.</div>';
+    var html = '<div class="cdetail"><div class="cd-head">מי מביא את הנקודות של כיתה ' + esc(clsRow.label) + '</div>' +
+      '<div class="tblwrap"><table class="mini-table"><thead><tr>' +
+      '<th class="rank">#</th><th>תלמיד</th><th>נקודות לכיתה</th><th>משחקונים</th><th>שיא</th><th>דיוק</th>' +
+      '</tr></thead><tbody>';
+    for (var i = 0; i < list.length; i++) {
+      var s = list[i];
+      var mark = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : (i + 1);
+      html += '<tr' + (i < PRIZES && s.total > 0 ? ' class="prize"' : '') + '>' +
+        '<td class="rank">' + mark + '</td>' +
+        '<td>' + esc(s.name) + (i < PRIZES && s.total > 0 ? ' <span class="prizechip">פרס כיתתי</span>' : '') + '</td>' +
+        '<td class="num" style="color:var(--brand)">' + s.total + '</td>' +
+        '<td>' + s.games + '</td>' +
+        '<td>' + (s.best || '—') + '</td>' +
+        '<td>' + (s.games ? s.acc + '%' : '—') + '</td>' +
+      '</tr>';
+    }
+    html += '</tbody></table></div></div>';
+    return html;
+  }
+
+  function renderStudentsTab() {
+    var rows = studentRows('').filter(function (s) { return s.games > 0 || s.total > 0 || true; });
+    $('scoresCount').innerHTML = '<b>' + rows.length + '</b> תלמידים';
+
+    var scored = rows.filter(function (s) { return s.total > 0; });
+    if (scored.length) {
+      var medals = ['🥇', '🥈', '🥉'];
+      var titles = ['מקום ראשון', 'מקום שני', 'מקום שלישי'];
+      var pod = '<div class="podium">';
+      for (var p = 0; p < Math.min(PRIZES, scored.length); p++) {
+        var s = scored[p];
+        pod += '<div class="pod pod' + (p + 1) + '">' +
+          '<div class="podmedal">' + medals[p] + '</div>' +
+          '<div class="podtitle">' + titles[p] + ' · פרס</div>' +
+          '<div class="podname">' + esc(s.name) + '</div>' +
+          '<div class="podclass">כיתה ' + esc(classLabel(s.cls)) + '</div>' +
+          '<div class="podpts">' + s.total + ' נק׳</div>' +
+        '</div>';
+      }
+      pod += '</div>';
+      $('podiumWrap').innerHTML = pod;
+    }
+
     if (!rows.length) {
-      $('scoresTable').innerHTML = '<div class="empty">עוד אין שמות שמורים. כתבו שם במסך הבית והוא יישמר כאן.</div>';
+      $('scoresTable').innerHTML = '<div class="empty">עוד אין תלמידים רשומים. כל תלמיד נרשם במסך הכניסה עם שם פרטי, שם משפחה וכיתה.</div>';
       $('scoresMore').innerHTML = '';
       return;
     }
+
     var html = '<div class="tblwrap"><table><thead><tr>' +
-      '<th class="rank">#</th><th>שחקן</th><th>כיתה</th><th>ניקוד כולל</th><th>משחקונים</th><th>שיא אישי</th><th>דיוק</th><th></th>' +
+      '<th class="rank">#</th><th>תלמיד</th><th>כיתה</th><th>ניקוד אישי</th><th>משחקונים</th><th>שיא</th><th>דיוק</th><th></th>' +
       '</tr></thead><tbody>';
     for (var i = 0; i < rows.length; i++) {
       var r = rows[i];
       var medal = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : (i + 1);
-      html += '<tr' + (r.id === db.activeId ? ' class="me"' : '') + '>' +
+      var isPrize = i < PRIZES && r.total > 0;
+      html += '<tr' + (isPrize ? ' class="prize"' : '') + (r.id === db.activeId ? ' data-me="1"' : '') + '>' +
         '<td class="rank">' + medal + '</td>' +
         '<td><button class="plink" data-select="' + esc(r.id) + '">' + esc(r.name) + '</button>' +
+          (isPrize ? ' <span class="prizechip">פרס</span>' : '') +
           (r.id === db.activeId ? ' <span class="tag">פעיל</span>' : '') + '</td>' +
         '<td>' + (r.cls ? esc(classLabel(r.cls)) : '<span class="muted">—</span>') + '</td>' +
         '<td class="num" style="color:var(--brand)">' + r.total + '</td>' +
         '<td>' + r.games + '</td>' +
         '<td>' + (r.best || '—') + '</td>' +
         '<td>' + (r.games ? r.acc + '%' : '—') + '</td>' +
-        '<td class="rowbtns">' +
-          '<button class="ic" data-rename="' + esc(r.id) + '" title="שינוי שם">✎</button>' +
-          '<button class="ic danger3" data-del="' + esc(r.id) + '" title="מחיקת שחקן">🗑</button>' +
-        '</td>' +
+        '<td class="rowbtns"><button class="ic danger3" data-del="' + esc(r.id) + '" title="מחיקת תלמיד">🗑</button></td>' +
       '</tr>';
     }
     html += '</tbody></table></div>';
     $('scoresTable').innerHTML = html;
-    $('scoresMore').innerHTML = '<p class="footnote">לוחצים על שם כדי להפוך אותו לשחקן הפעיל. כיתה נקבעת במסך הבית.</p>';
+    $('scoresMore').innerHTML = '<p class="footnote">טבלת התלמידים בבית הספר, לפי סך הנקודות. ' +
+      'שלושת הראשונים מסומנים כזוכי פרס 🏆. לחיצה על שם הופכת את התלמיד לפעיל במכשיר הזה.</p>';
   }
 
   function renderRecordsTab() {
@@ -1442,8 +1609,8 @@ var EXTRA_QUESTIONS = {
       if (pfVal && r.pid !== pfVal) return false;
       if (bfVal && r.g !== bfVal) return false;
       if (cfVal) {
-        var pl = playerById(r.pid);
-        if (!pl || pl.cls !== cfVal) return false;
+        var st = studentById(r.pid);
+        if (!st || st.cls !== cfVal) return false;
       }
       return true;
     });
@@ -1464,18 +1631,18 @@ var EXTRA_QUESTIONS = {
       return b.s - a.s || b.ts - a.ts;
     });
 
-    var top = rows.slice(0, 100);
+    var top = rows.slice(0, 120);
     var html = '<div class="tblwrap"><table><thead><tr>' +
-      '<th class="rank">#</th><th>שחקן</th><th>כיתה</th><th>משחקון</th><th>ניקוד</th><th>נכון</th><th>תאריך</th>' +
+      '<th class="rank">#</th><th>תלמיד</th><th>כיתה</th><th>משחקון</th><th>נקודות לכיתה</th><th>נכון</th><th>תאריך</th>' +
       '</tr></thead><tbody>';
     for (var i = 0; i < top.length; i++) {
       var r = top[i];
-      var pl = playerById(r.pid);
+      var st = studentById(r.pid);
       var medal = sort === 'score' ? (i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : (i + 1)) : (i + 1);
       html += '<tr>' +
         '<td class="rank">' + medal + '</td>' +
-        '<td>' + esc(pl ? pl.name : '—') + '</td>' +
-        '<td>' + esc(pl && pl.cls ? classLabel(pl.cls) : '—') + '</td>' +
+        '<td>' + esc(st ? fullName(st) : '—') + '</td>' +
+        '<td>' + esc(st && st.cls ? classLabel(st.cls) : '—') + '</td>' +
         '<td>' + esc(r.t || r.g) + '</td>' +
         '<td class="num" style="color:var(--brand)">' + r.s + '</td>' +
         '<td>' + r.c + '/' + r.n + '</td>' +
@@ -1484,17 +1651,17 @@ var EXTRA_QUESTIONS = {
     }
     html += '</tbody></table></div>';
     $('scoresTable').innerHTML = html;
-    $('scoresMore').innerHTML = rows.length > 100
-      ? '<p class="footnote">מוצגות 100 התוצאות הראשונות מתוך ' + rows.length + '.</p>' : '';
+    $('scoresMore').innerHTML = rows.length > 120
+      ? '<p class="footnote">מוצגות 120 התוצאות הראשונות מתוך ' + rows.length + '.</p>' : '';
   }
 
   /* ---------------- ייצוא / ייבוא ---------------- */
   function exportScores() {
     var payload = {
-      app: 'books-games', version: 4, exported: new Date().toISOString(),
-      games: BOOKS.map(function (b) { return { id: b.id, title: b.title, questions: b.all.length }; }),
+      app: 'books-games', version: 5, exported: new Date().toISOString(),
+      games: BOOKS.map(function (b) { return { id: b.id, title: b.title, questions: ensureLibrary(b).length }; }),
       classes: CLASSES.map(function (c) { return { id: c.id, label: c.label, grade: c.grade }; }),
-      players: db.players.map(function (p) { return { id: p.id, name: p.name, cls: p.cls || null }; }),
+      students: db.students.map(function (s) { return { id: s.id, first: s.first, last: s.last, cls: s.cls || null }; }),
       scores: db.scores.map(function (r) { return { pid: r.pid, g: r.g, t: r.t, s: r.s, c: r.c, n: r.n, ts: r.ts }; })
     };
     var text = JSON.stringify(payload, null, 2);
@@ -1506,20 +1673,15 @@ var EXTRA_QUESTIONS = {
       a.download = 'books-scores-' + new Date().toISOString().slice(0, 10) + '.json';
       document.body.appendChild(a); a.click(); a.remove();
       setTimeout(function () { URL.revokeObjectURL(url); }, 3000);
-      $('exportNote').textContent = 'יוצאו ' + db.scores.length + ' תוצאות של ' + db.players.length + ' שחקנים.';
+      $('exportNote').textContent = 'יוצאו ' + db.scores.length + ' תוצאות של ' + db.students.length + ' תלמידים.';
     } catch (e) {
       $('exportNote').textContent = 'לא הצלחתי לייצא במכשיר הזה.';
     }
   }
 
-  function plNameFrom(pid, data) {
-    if (!data || !Array.isArray(data.players)) return '';
-    for (var i = 0; i < data.players.length; i++) if (data.players[i].id === pid) return data.players[i].name;
-    return '';
-  }
-  function plClassFrom(pid, data) {
-    if (!data || !Array.isArray(data.players)) return null;
-    for (var i = 0; i < data.players.length; i++) if (data.players[i].id === pid) return data.players[i].cls || null;
+  function studentFromImport(pid, data) {
+    if (!data || !Array.isArray(data.students)) return null;
+    for (var i = 0; i < data.students.length; i++) if (data.students[i].id === pid) return data.students[i];
     return null;
   }
 
@@ -1536,12 +1698,13 @@ var EXTRA_QUESTIONS = {
       for (var i = 0; i < data.scores.length; i++) {
         var r = data.scores[i];
         if (!r || !r.g || typeof r.s !== 'number') continue;
-        var nm = plNameFrom(r.pid, data) || 'אורח';
-        var pl = playerById(r.pid) || playerByName(nm) || ensurePlayer(nm);
-        if (!pl.cls) { var c = plClassFrom(r.pid, data); if (c) { pl.cls = c; } }
+        var info = studentFromImport(r.pid, data) || {};
+        var st = studentById(r.pid) || findStudent(info.first || '', info.last || '', info.cls || null) ||
+          ensureStudent({ first: info.first || info.name || 'אורח', last: info.last || '', cls: info.cls || null });
+        if (!st) continue;
         db.scores.push({
-          id: uid('s'), pid: pl.id, g: r.g, t: r.t || (bookById(r.g) || {}).title || r.g,
-          s: Math.min(MAX_PER_GAME, r.s), c: r.c || 0, n: r.n || 5, cls: pl.cls || null, ts: r.ts || Date.now()
+          id: uid('s'), pid: st.id, g: r.g, t: r.t || (bookById(r.g) || {}).title || r.g,
+          s: Math.min(MAX_PER_GAME, r.s), c: r.c || 0, n: r.n || 5, cls: st.cls || null, ts: r.ts || Date.now()
         });
         added++;
       }
@@ -1555,51 +1718,38 @@ var EXTRA_QUESTIONS = {
 
   /* ---------------- אירועים ---------------- */
   function bind() {
-    $('themeBtn').addEventListener('click', function () {
-      db.theme = db.theme === 'dark' ? 'light' : 'dark';
-      applyTheme(); saveDb();
-    });
-
-    var nameInput = $('playerName');
-    function commitName() {
-      var v = cleanName(nameInput.value);
-      var pl = activePlayer();
-      if (!v) { nameInput.value = pl ? pl.name : ''; return; }
-      if (pl && cleanName(pl.name) === v) return;
-      var existing = playerByName(v);
-      if (existing) { db.activeId = existing.id; saveDb(); }
-      else { ensurePlayer(v); }
-      renderPlayerBar();
-      setTimeout(function () { renderHome(); }, 0);
+    var themeBtns = document.querySelectorAll('.themeBtn');
+    for (var ti = 0; ti < themeBtns.length; ti++) {
+      themeBtns[ti].addEventListener('click', function () {
+        db.theme = db.theme === 'dark' ? 'light' : 'dark';
+        applyTheme(); saveDb();
+      });
     }
-    nameInput.addEventListener('change', commitName);
-    nameInput.addEventListener('blur', commitName);
-    nameInput.addEventListener('keydown', function (e) {
-      if (e.key === 'Enter') { e.preventDefault(); commitName(); nameInput.blur(); }
-    });
 
-    $('newPlayerBtn').addEventListener('click', function () {
-      nameInput.value = '';
-      nameInput.focus();
-      nameInput.placeholder = 'שם השחקן החדש ואז Enter';
-    });
+    $('regBtn').addEventListener('click', submitRegistration);
+    $('regLast').addEventListener('keydown', function (e) { if (e.key === 'Enter') submitRegistration(); });
+    $('regFirst').addEventListener('keydown', function (e) { if (e.key === 'Enter') $('regLast').focus(); });
 
-    $('classSel').addEventListener('change', function () {
-      var pl = activePlayer();
-      if (!pl) {
-        var nm = cleanName(nameInput.value);
-        if (!nm) { this.value = ''; nameInput.focus(); return; }
-        pl = ensurePlayer(nm);
-      }
-      setPlayerClass(pl.id, this.value || null);
-      renderPlayerBar(); renderHome(); renderScores();
-    });
-
-    $('playerChips').addEventListener('click', function (e) {
-      var b = e.target.closest ? e.target.closest('[data-pid]') : null;
+    $('studentChips').addEventListener('click', function (e) {
+      var b = e.target.closest ? e.target.closest('[data-sid]') : null;
       if (!b) return;
-      selectPlayer(b.getAttribute('data-pid'));
+      var id = b.getAttribute('data-sid');
+      var st = studentById(id);
+      if (!st) return;
+      db.activeId = id; saveDb();
+      if (!isRegistered(st)) {
+        renderRegister();
+        $('regFirst').value = st.first || '';
+        $('regLast').value = st.last || '';
+        $('regClass').value = st.cls || '';
+        $('regError').textContent = 'השלימו שם משפחה ובחרו כיתה כדי להמשיך.';
+        return;
+      }
+      renderHome();
+      show('screen-home');
     });
+
+    $('switchBtn').addEventListener('click', function () { renderRegister(); });
 
     $('bookGrid').addEventListener('click', function (e) {
       var btn = e.target.closest ? e.target.closest('.book') : null;
@@ -1617,7 +1767,7 @@ var EXTRA_QUESTIONS = {
     $('quitBtn').addEventListener('click', function () { game = null; renderHome(); show('screen-home'); });
     $('againBtn').addEventListener('click', function () { if (game) startGame(game.book.id); });
     $('endHomeBtn').addEventListener('click', function () { renderHome(); show('screen-home'); });
-    $('endScoresBtn').addEventListener('click', function () { renderScores(); show('screen-scores'); });
+    $('endScoresBtn').addEventListener('click', function () { scoresTab = 'classes'; renderScores(); show('screen-scores'); });
     $('toScores').addEventListener('click', function () { scoresTab = 'classes'; renderScores(); show('screen-scores'); });
     $('backHome2').addEventListener('click', function () { renderHome(); show('screen-home'); });
 
@@ -1636,24 +1786,28 @@ var EXTRA_QUESTIONS = {
     $('scoresTable').addEventListener('click', function (e) {
       var t = e.target;
       if (!t.closest) return;
+      var clsRow = t.closest('[data-class]');
+      if (clsRow) {
+        var cid = clsRow.getAttribute('data-class');
+        expandedClasses[cid] = !expandedClasses[cid];
+        renderScores();
+        return;
+      }
       var selBtn = t.closest('[data-select]');
-      if (selBtn) { selectPlayer(selBtn.getAttribute('data-select')); return; }
-      var ren = t.closest('[data-rename]');
-      if (ren) {
-        var pid = ren.getAttribute('data-rename');
-        var pl = playerById(pid);
-        var nv = window.prompt('שם חדש לשחקן:', pl ? pl.name : '');
-        if (nv === null) return;
-        if (!renamePlayer(pid, nv)) { window.alert('השם ריק או שכבר תפוס על ידי שחקן אחר.'); return; }
-        renderScores(); renderHome();
+      if (selBtn) {
+        var sid = selBtn.getAttribute('data-select');
+        var st = studentById(sid);
+        if (!st) return;
+        db.activeId = sid; saveDb();
+        renderHome(); renderScores();
         return;
       }
       var del = t.closest('[data-del]');
       if (del) {
         var did = del.getAttribute('data-del');
-        var dp = playerById(did);
-        if (window.confirm('למחוק את ' + (dp ? dp.name : '') + ' ואת כל התוצאות שלו? אי אפשר לבטל.')) {
-          deletePlayer(did); renderScores(); renderHome();
+        var ds = studentById(did);
+        if (window.confirm('למחוק את ' + fullName(ds) + ' ואת כל התוצאות שלו? אי אפשר לבטל.')) {
+          deleteStudent(did); renderScores(); renderHome();
         }
         return;
       }
@@ -1667,7 +1821,7 @@ var EXTRA_QUESTIONS = {
       if (this.files && this.files[0]) { importScores(this.files[0]); this.value = ''; }
     });
     $('clearScores').addEventListener('click', function () {
-      if (window.confirm('למחוק את כל התוצאות? השמות והכיתות יישארו. אי אפשר לבטל.')) {
+      if (window.confirm('למחוק את כל התוצאות? שמות התלמידים והכיתות יישארו. אי אפשר לבטל.')) {
         db.scores = []; saveDb(); renderScores(); renderHome();
       }
     });
@@ -1682,13 +1836,16 @@ var EXTRA_QUESTIONS = {
   }
 
   /* ---------------- init ---------------- */
-  buildLibrary();
+  for (var bi = 0; bi < BOOKS.length; bi++) ensureLibrary(BOOKS[bi]);
   loadDb();
   applyTheme();
-  fillClassSelect();
+  fillClassSelect($('regClass'));
   bind();
   renderHome();
   renderScores();
+
+  if (activeRegistered()) show('screen-home');
+  else renderRegister();
 
   window.__booksGame = {
     books: BOOKS,
@@ -1696,12 +1853,13 @@ var EXTRA_QUESTIONS = {
     state: function () { return { db: db, game: game }; },
     api: {
       addScore: addScore, bestScore: bestScore, bestRecord: bestRecord, scoreFor: scoreFor,
-      playerTotals: playerTotals, ranking: ranking, gameBoard: gameBoard, classBoard: classBoard,
-      ensurePlayer: ensurePlayer, deletePlayer: deletePlayer, renamePlayer: renamePlayer,
-      setPlayerClass: setPlayerClass, questionsForGrade: questionsForGrade, gradePlan: gradePlan,
+      studentTotals: studentTotals, studentRows: studentRows, classBoard: classBoard, gameBoard: gameBoard,
+      ensureStudent: ensureStudent, deleteStudent: deleteStudent, isRegistered: isRegistered,
+      questionsForGrade: questionsForGrade, gradePlan: gradePlan, fullName: fullName,
       exportScores: exportScores, importScores: importScores
     },
-    start: startGame, answer: answer, next: nextQuestion
+    start: startGame, answer: answer, next: nextQuestion,
+    register: submitRegistration, showRegister: renderRegister, show: show
   };
 })();
 </script>
