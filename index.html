@@ -273,8 +273,9 @@ tr.dim td{opacity:.55}
       <button class="btn" id="toScores">🏆 לוח ניקוד ותוצאות</button>
     </div>
     <p class="footnote">
-      בכל משחקון 5 שאלות על ספר אחד. תשובה נכונה = 100 נקודות, ורצף תשובות נכונות מעניק בונוס.
-      השמות והתוצאות נשמרים במכשיר הזה, כך שכל שחקן יכול לחזור ולשבור את השיא שלו.
+      לכל ספר 8 שאלות, ומתוכן נבחרות שאלות לפי שכבת הכיתה: 5 שאלות בכיתות א'-ב', 6 בכיתות ג'-ד'
+      ו-8 בכיתות ה'-ו'. כל משחקון שווה עד 1000 נקודות, לפי אחוז התשובות הנכונות, כך שכל הכיתות
+      מתחרות באותו קנה מידה. השמות, הכיתות והתוצאות נשמרים במכשיר הזה.
     </p>
   </section>
 
@@ -1141,17 +1142,21 @@ var EXTRA_QUESTIONS = {
   function renderHome() {
     renderPlayerBar();
     var pl = activePlayer();
+    var myGrade = pl && pl.cls ? classGrade(pl.cls) : 0;
+    var myLen = myGrade ? gradePlan(myGrade) : 0;
     var html = '';
     for (var k = 0; k < BOOKS.length; k++) {
       var b = BOOKS[k];
+      ensureLibrary(b);
       var best = pl ? bestScore(b.id, pl.id) : null;
+      var lenLabel = myLen ? myLen + ' שאלות' : b.all.length + ' שאלות';
       html += '<button class="book" data-book="' + esc(b.id) + '" style="--h:' + (b.hue || 20) + '">' +
         '<div class="inner">' +
           '<div class="emoji">' + b.emoji + '</div>' +
           '<div class="title">' + esc(b.title) + '</div>' +
           '<div class="author">' + esc(b.author) + '</div>' +
           '<div class="foot">' +
-            (best !== null ? '<span class="done">✓ ' + best + '</span>' : '<span style="opacity:.75;font-size:12px">' + b.all.length + ' שאלות</span>') +
+            (best !== null ? '<span class="done">✓ ' + best + '</span>' : '<span style="opacity:.75;font-size:12px">' + lenLabel + '</span>') +
             '<span class="play">שחקו ←</span>' +
           '</div>' +
         '</div>' +
