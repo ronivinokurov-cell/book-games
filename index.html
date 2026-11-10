@@ -1246,7 +1246,7 @@ var EXTRA_QUESTIONS = {
     var st = activeStudent();
     $('regFirst').value = prefill ? '' : (st ? st.first || '' : '');
     $('regLast').value = prefill ? '' : (st ? st.last || '' : '');
-    $('regClass').value = st && st.cls ? st.cls : '';
+    $('regClass').value = (!prefill && st && st.cls) ? st.cls : '';
     $('regError').textContent = '';
 
     var chips = '';
@@ -1815,7 +1815,8 @@ var EXTRA_QUESTIONS = {
       show('screen-home');
     });
 
-    $('switchBtn').addEventListener('click', function () { renderRegister(); });
+    // החלפת תלמיד: פותחים טופס נקי, והתלמידים הקיימים זמינים ברשימה למטה
+    $('switchBtn').addEventListener('click', function () { renderRegister(true); });
 
     $('bookGrid').addEventListener('click', function (e) {
       var btn = e.target.closest ? e.target.closest('.book') : null;
